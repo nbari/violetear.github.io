@@ -64,7 +64,128 @@
                     </h2>
                 </header>
                 <section id="post-body">
-                    <p>TODO</p>
+                    
+
+<p><strong>Violetear</strong> handle versions by using the <a href="https://en.wikipedia.org/wiki/Media_type#Naming"><code>Accept: application/vnd.*</code></a>
+header.</p>
+
+<p>This means that the URL won&rsquo;t change, therefore instead of specifying the version on the URL something like this:</p>
+
+<pre><code class="language-html">https://acme.tld/api/v2/foo
+</code></pre>
+
+<p>It can always be:</p>
+
+<pre><code class="language-html">https://acme.tld/api/foo
+</code></pre>
+
+<p>But based on the request <code>Accept: application/vnd.*</code> header the corresponding
+version will be served:</p>
+
+<pre><code>https://acme.tld/api/foo
+===&gt;
+GET /api/foo HTTP/1.1
+Accept: application/vnd.acme.v2
+</code></pre>
+
+<hr />
+
+<h2 id="using-the-fragment-identifier">Using the Fragment identifier <code>#</code></h2>
+
+<p>To define what version to use, the <code>#</code> <a href="https://en.wikipedia.org/wiki/Fragment_identifier">fragment identifier</a> is used when
+declaring the routes.</p>
+
+<p>The <code>versionHeader</code> constant is set to:</p>
+
+<pre><code>application/vnd.
+</code></pre>
+
+<p>This means that when defining a version only the string after <code>application/vnd.</code> is required:</p>
+
+<pre><code>application/vnd.[version]
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Request Accept header</th>
+<th>route version in violetear</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>application/vnd.acme.v2</td>
+<td>#acme.v2</td>
+</tr>
+
+<tr>
+<td>application/vnd.acme.v2+json</td>
+<td>#acme.v2+json</td>
+</tr>
+
+<tr>
+<td>application/vnd.acme.v2.raw+json</td>
+<td>#acme.v2.raw+json</td>
+</tr>
+</tbody>
+</table>
+
+<p>Example:</p>
+
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;log&quot;
+	&quot;net/http&quot;
+
+	&quot;github.com/nbari/violetear&quot;
+)
+
+func handleHello(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, &quot;Hi,  %s!&quot;, r.URL.Path[1:])
+}
+func handleHelloV2(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, &quot;version 2&quot;)
+}
+
+func main() {
+	router := violetear.New()
+
+	router.HandleFunc(&quot;/hello&quot;, handleHello, &quot;GET, HEAD&quot;)
+	router.HandleFunc(&quot;/hello#violetear.v2&quot;, handleHelloV2, &quot;GET, HEAD, POST&quot;)
+
+	log.Fatal(http.ListenAndServe(&quot;:8000&quot;, router))
+}
+</code></pre>
+
+<p>In this example, there are 2 different handlers for the <code>/hello/</code> request <code>handleHello</code> and <code>handeHelloV2</code>:</p>
+
+<pre><code>router.HandleFunc(&quot;/hello&quot;, handleHello, &quot;GET, HEAD&quot;)
+router.HandleFunc(&quot;/hello#violetear.v2&quot;, handleHelloV2, &quot;GET, HEAD, POST&quot;)
+</code></pre>
+
+<p>To serve using the <code>handleHelloV2</code>, the request needs to contain the header:</p>
+
+<pre><code>Accept: application/vnd.violetear.v2
+</code></pre>
+
+<p>if not, will take as default the handler <code>handleHello</code></p>
+
+<hr />
+
+<p>Example of how to send the header using http or curl</p>
+
+<p>Using the http client:</p>
+
+<pre><code>$ http 0:8000/hello &quot;Accept: aplplication/vnd.violetear.v2&quot;
+</code></pre>
+
+<p>Using curl:</p>
+
+<pre><code>$ curl 0:8000/hello -H &quot;Accept: application/vnd.violetear.v2&quot;
+</code></pre>
 
                 </section>
             </article>
@@ -148,12 +269,12 @@
    
     
         
+        <li>
+            <a href="https://violetear.org/post/panichandler/">PanicHandler</a>
+        </li>
+        
    
     
-        
-        <li>
-            <a href="https://violetear.org/post/">Posts</a>
-        </li>
         
    
 </ul>

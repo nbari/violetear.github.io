@@ -1,4 +1,4 @@
-	<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en-us">
 	<head>
 		<meta charset="utf-8">
@@ -8,7 +8,7 @@
 		<meta name="description" content="Go HTTP router">
 		<meta name="keywords" content="router, http2, dynamic, rest, versioning">
 		<meta name="generator" content="Hugo 0.19" />
-		<title>Posts &middot; violetear</title>
+		<title>PanicHandler &middot; violetear</title>
         <link rel="apple-touch-icon" sizes="57x57" href="https://violetear.org/images/apple-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="https://violetear.org/images/apple-icon-60x60.png">
         <link rel="apple-touch-icon" sizes="72x72" href="https://violetear.org/images/apple-icon-72x72.png">
@@ -36,8 +36,8 @@
 		
 	</head>
 
-	<body>
-	<nav class="main-nav">
+    <body>
+       <nav class="main-nav">
 	
 	
 		<a href='https://violetear.org/'> <span class="arrow">←</span>Home</a>
@@ -53,91 +53,123 @@
 	<a class="cta" href="https://violetear.org/index.xml">Subscribe</a>
 	
 </nav>
-	<div class="profile">
-    <section id="wrapper">
-        <header id="header">
-            <a href="https://violetear.org/about"><img src="https://violetear.org/img/violetear.png" alt="violetear.org"></a>
-            <h1>violetear</h1>
-            <h2>Go HTTP router</h2>
-        </header>
-<a href="https://godoc.org/github.com/nbari/violetear"><img src="https://godoc.org/github.com/nbari/violetear?status.svg" alt="GoDoc" class="badge"></a>
-<a href="https://travis-ci.org/nbari/violetear"><img src="https://travis-ci.org/nbari/violetear.svg?branch=master" alt="Build Status" class="badge"></a>
-<a href="https://coveralls.io/github/nbari/violetear?branch=develop"><img src="https://coveralls.io/repos/nbari/violetear/badge.svg?branch=develop&amp;service=github" alt="Coverage Status" class="badge"></a>
-<a href="https://goreportcard.com/report/github.com/nbari/violetear"><img src="https://goreportcard.com/badge/github.com/nbari/violetear" alt="Go Report Card" class="badge"></a>
-    </section>
-</div>
 
-	<section id="wrapper" class="home">
-		<ul id="post-list">
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>PanicHandler</h1>
+                    <h2 class="headline">
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    <p><code>PanicHandler</code> function to handle panics.</p>
+
+<p>Example:</p>
+
+<pre><code class="language-go">func myPanicHandler() http.HandlerFunc {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        http.Error(w, &quot;custom panic message&quot;, 500)
+    })
+}
+
+router := violetear.New()
+router.PanicHandler = myPanicHandler()
+</code></pre>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                
+                    
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fvioletear.org%2fpost%2fpanichandler%2f - PanicHandler "><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
     
     
         
-            <li>
-                <a href='https://violetear.org/post/how-it-works/'>How it works <h2></h2></a>
-            </li>
+        <li>
+            <a href="https://violetear.org/post/how-it-works/">How it works</a>
+        </li>
         
-    
-    
-        
-            <li>
-                <a href='https://violetear.org/post/usage/'>Usage <h2>Basic example</h2></a>
-            </li>
-        
-    
+   
     
         
-            <li>
-                <a href='https://violetear.org/post/middleware/'>Middleware <h2>Alice - Middleware Chaining</h2></a>
-            </li>
+        <li>
+            <a href="https://violetear.org/post/usage/">Usage</a>
+        </li>
         
-    
-    
-        
-            <li>
-                <a href='https://violetear.org/post/context-named/'>Context &amp; Named parameters <h2>r.Context().Value(violetear.ParamsKey)</h2></a>
-            </li>
-        
-    
+   
     
         
-            <li>
-                <a href='https://violetear.org/post/versioning/'>Versioning <h2>application/vnd.acme.v2</h2></a>
-            </li>
+        <li>
+            <a href="https://violetear.org/post/middleware/">Middleware</a>
+        </li>
         
-    
-    
-        
-            <li>
-                <a href='https://violetear.org/post/requestid/'>RequestID <h2>router.RequestID=&ldquo;rid&rdquo;</h2></a>
-            </li>
-        
-    
+   
     
         
-            <li>
-                <a href='https://violetear.org/post/notfoundhandler/'>NotFoundHandler <h2>404 Not Found</h2></a>
-            </li>
+        <li>
+            <a href="https://violetear.org/post/context-named/">Context &amp; Named parameters</a>
+        </li>
         
-    
-    
-        
-            <li>
-                <a href='https://violetear.org/post/notallowedhandler/'>NotAllowedHandler <h2>405 Method Not Allowed</h2></a>
-            </li>
-        
-    
+   
     
         
-            <li>
-                <a href='https://violetear.org/post/panichandler/'>PanicHandler <h2>50X</h2></a>
-            </li>
+        <li>
+            <a href="https://violetear.org/post/versioning/">Versioning</a>
+        </li>
         
+   
     
+        
+        <li>
+            <a href="https://violetear.org/post/requestid/">RequestID</a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://violetear.org/post/notfoundhandler/">NotFoundHandler</a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://violetear.org/post/notallowedhandler/">NotAllowedHandler</a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://violetear.org/post/panichandler/">PanicHandler</a>
+        </li>
+        
+   
+    
+        
+   
 </ul>
-        <nav id="post-nav">
-    
-</nav>
-		<footer id="footer">
+            <footer id="footer">
     
         <div id="social">
 
@@ -160,9 +192,9 @@
     </p>
 </footer>
 
-	</section>
+        </section>
 
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://violetear.org/js/main.js"></script>
 <script src="https://violetear.org/js/highlight.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
@@ -181,5 +213,5 @@ ga('send', 'pageview');
 </script>
 
 
-	</body>
+    </body>
 </html>

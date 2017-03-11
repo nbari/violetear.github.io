@@ -446,7 +446,128 @@ func main() {
       <pubDate>Sat, 11 Mar 2017 11:04:28 +0100</pubDate>
       
       <guid>https://violetear.org/post/versioning/</guid>
-      <description>&lt;p&gt;TODO&lt;/p&gt;
+      <description>
+
+&lt;p&gt;&lt;strong&gt;Violetear&lt;/strong&gt; handle versions by using the &lt;a href=&#34;https://en.wikipedia.org/wiki/Media_type#Naming&#34;&gt;&lt;code&gt;Accept: application/vnd.*&lt;/code&gt;&lt;/a&gt;
+header.&lt;/p&gt;
+
+&lt;p&gt;This means that the URL won&amp;rsquo;t change, therefore instead of specifying the version on the URL something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;https://acme.tld/api/v2/foo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It can always be:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;https://acme.tld/api/foo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;But based on the request &lt;code&gt;Accept: application/vnd.*&lt;/code&gt; header the corresponding
+version will be served:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;https://acme.tld/api/foo
+===&amp;gt;
+GET /api/foo HTTP/1.1
+Accept: application/vnd.acme.v2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;using-the-fragment-identifier&#34;&gt;Using the Fragment identifier &lt;code&gt;#&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;To define what version to use, the &lt;code&gt;#&lt;/code&gt; &lt;a href=&#34;https://en.wikipedia.org/wiki/Fragment_identifier&#34;&gt;fragment identifier&lt;/a&gt; is used when
+declaring the routes.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;versionHeader&lt;/code&gt; constant is set to:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;application/vnd.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This means that when defining a version only the string after &lt;code&gt;application/vnd.&lt;/code&gt; is required:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;application/vnd.[version]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Request Accept header&lt;/th&gt;
+&lt;th&gt;route version in violetear&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;application/vnd.acme.v2&lt;/td&gt;
+&lt;td&gt;#acme.v2&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;application/vnd.acme.v2+json&lt;/td&gt;
+&lt;td&gt;#acme.v2+json&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;application/vnd.acme.v2.raw+json&lt;/td&gt;
+&lt;td&gt;#acme.v2.raw+json&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import (
+	&amp;quot;fmt&amp;quot;
+	&amp;quot;log&amp;quot;
+	&amp;quot;net/http&amp;quot;
+
+	&amp;quot;github.com/nbari/violetear&amp;quot;
+)
+
+func handleHello(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, &amp;quot;Hi,  %s!&amp;quot;, r.URL.Path[1:])
+}
+func handleHelloV2(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, &amp;quot;version 2&amp;quot;)
+}
+
+func main() {
+	router := violetear.New()
+
+	router.HandleFunc(&amp;quot;/hello&amp;quot;, handleHello, &amp;quot;GET, HEAD&amp;quot;)
+	router.HandleFunc(&amp;quot;/hello#violetear.v2&amp;quot;, handleHelloV2, &amp;quot;GET, HEAD, POST&amp;quot;)
+
+	log.Fatal(http.ListenAndServe(&amp;quot;:8000&amp;quot;, router))
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In this example, there are 2 different handlers for the &lt;code&gt;/hello/&lt;/code&gt; request &lt;code&gt;handleHello&lt;/code&gt; and &lt;code&gt;handeHelloV2&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;router.HandleFunc(&amp;quot;/hello&amp;quot;, handleHello, &amp;quot;GET, HEAD&amp;quot;)
+router.HandleFunc(&amp;quot;/hello#violetear.v2&amp;quot;, handleHelloV2, &amp;quot;GET, HEAD, POST&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To serve using the &lt;code&gt;handleHelloV2&lt;/code&gt;, the request needs to contain the header:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Accept: application/vnd.violetear.v2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;if not, will take as default the handler &lt;code&gt;handleHello&lt;/code&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Example of how to send the header using http or curl&lt;/p&gt;
+
+&lt;p&gt;Using the http client:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ http 0:8000/hello &amp;quot;Accept: aplplication/vnd.violetear.v2&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Using curl:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ curl 0:8000/hello -H &amp;quot;Accept: application/vnd.violetear.v2&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
@@ -525,6 +646,28 @@ func main() {
     router := violetear.New()
     router.NotAllowedHandler = my405()
     ...
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>PanicHandler</title>
+      <link>https://violetear.org/post/panichandler/</link>
+      <pubDate>Sat, 11 Mar 2017 11:03:40 +0100</pubDate>
+      
+      <guid>https://violetear.org/post/panichandler/</guid>
+      <description>&lt;p&gt;&lt;code&gt;PanicHandler&lt;/code&gt; function to handle panics.&lt;/p&gt;
+
+&lt;p&gt;Example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func myPanicHandler() http.HandlerFunc {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        http.Error(w, &amp;quot;custom panic message&amp;quot;, 500)
+    })
+}
+
+router := violetear.New()
+router.PanicHandler = myPanicHandler()
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
