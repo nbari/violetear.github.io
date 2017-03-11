@@ -1,2 +1,1 @@
-# violetear.github.io
-violetear.org
+https://violetear.org

@@ -1,0 +1,219 @@
+    <!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="violetear">
+		<meta name="description" content="Go HTTP router">
+		<meta name="keywords" content="router, http2, dynamic, rest, versioning">
+		<meta name="generator" content="Hugo 0.19" />
+		<title>NotFoundHandler &middot; violetear</title>
+        <link rel="apple-touch-icon" sizes="57x57" href="https://violetear.io/images/apple-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="60x60" href="https://violetear.io/images/apple-icon-60x60.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="https://violetear.io/images/apple-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="https://violetear.io/images/apple-icon-76x76.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="https://violetear.io/images/apple-icon-114x114.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="https://violetear.io/images/apple-icon-120x120.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="https://violetear.io/images/apple-icon-144x144.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="https://violetear.io/images/apple-icon-152x152.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="https://violetear.io/images/apple-icon-180x180.png">
+        <link rel="icon" type="image/png" sizes="192x192"  href="https://violetear.io/images/android-icon-192x192.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="https://violetear.io/images/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="https://violetear.io/images/favicon-96x96.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="https://violetear.io/images/favicon-16x16.png">
+		<link rel="shortcut icon" href="https://violetear.io/images/favicon.ico">
+		<link rel="stylesheet" href="https://violetear.io/css/style.css">
+		<link rel="stylesheet" href="https://violetear.io/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://violetear.io/css/monosocialiconsfont.css">
+		
+
+		
+		<link href="https://violetear.io/index.xml" rel="alternate" type="application/rss+xml" title="violetear" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://violetear.io/'> <span class="arrow">←</span>Home</a>
+	
+
+	
+		<a href="https://github.com/nbari/violetear/">Github</a>
+		<a href="https://github.com/nbari/violetear/issues">Issues</a>
+		<a href='https://violetear.io/about'>About</a>
+	
+
+	
+	<a class="cta" href="https://violetear.io/index.xml">Subscribe</a>
+	
+</nav>
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>NotFoundHandler</h1>
+                    <h2 class="headline">
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    <p>For defining a custom <code>http.Handler</code> to handle <strong>404 Not Found</strong> example:</p>
+
+<pre><code>...
+
+func my404() http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        http.Error(w, &quot;my custom 404 message&quot;, 404)
+    })
+}
+
+func main() {
+    router := violetear.New()
+    router.NotFoundHandler = my404()
+    ...
+</code></pre>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                
+                    
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fvioletear.io%2fpost%2fnotfoundhandler%2f - NotFoundHandler "><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://violetear.io/post/how-it-works/">How it works</a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://violetear.io/post/usage/">Usage</a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://violetear.io/post/middleware/">Middleware</a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://violetear.io/post/context-named/">Context &amp; Named parameters</a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://violetear.io/post/versioning/">Versioning</a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://violetear.io/post/requestid/">RequestID</a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://violetear.io/post/notfoundhandler/">NotFoundHandler</a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://violetear.io/post/notallowedhandler/">NotAllowedHandler</a>
+        </li>
+        
+   
+    
+        
+   
+    
+        
+        <li>
+            <a href="https://violetear.io/post/">Posts</a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://github.com/nbari/violetear">
+        circlegithub
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://violetear.io/js/main.js"></script>
+<script src="https://violetear.io/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-69163599-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+    </body>
+</html>

@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>violetear</title>
+    <link>https://violetear.io/index.xml</link>
+    <description>Recent content on violetear</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright> </copyright>
+    <lastBuildDate>Sat, 11 Mar 2017 10:11:01 +0000</lastBuildDate>
+    <atom:link href="https://violetear.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>How it works</title>
+      <link>https://violetear.io/post/how-it-works/</link>
+      <pubDate>Sat, 11 Mar 2017 10:11:01 +0000</pubDate>
+      
+      <guid>https://violetear.io/post/how-it-works/</guid>
+      <description>&lt;p&gt;The router is capable off handle any kind or URI, static,
+dynamic or catchall and based on the
+&lt;a href=&#34;http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html&#34;&gt;HTTP request Method&lt;/a&gt;
+accept or discard the request.&lt;/p&gt;
+
+&lt;p&gt;For example, suppose we have an API that exposes a service that allow to ping
+any IP address.&lt;/p&gt;
+
+&lt;p&gt;To handle only &lt;code&gt;GET&lt;/code&gt; requests for any IPv4 addresss:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://api.violetear.org/command/ping/127.0.0.1
+                        \______/\___/\________/
+                            |     |      |
+                             static      |
+                                      dynamic
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The router &lt;code&gt;HandlerFunc&lt;/code&gt;  would be:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;router.HandleFunc(&amp;quot;/command/ping/:ip&amp;quot;, ipHandler, &amp;quot;GET&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For this to work, first the regex matching &lt;code&gt;:ip&lt;/code&gt; should be added:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;router.AddRegex(&amp;quot;:ip&amp;quot;, `^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$`)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s say you also want to be available to ping ipv6 or any host:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://api.violetear.org/command/ping/*
+                        \______/\___/\_/
+                            |     |   |
+                             static   |
+                                   catch-all
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A catch-all could be used and also a different handler, for example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;router.HandleFunc(&amp;quot;/command/ping/*&amp;quot;, anyHandler, &amp;quot;GET, HEAD&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;*&lt;/code&gt; indicates the router to behave like a catch-all therefore it
+will match anything after the &lt;code&gt;/command/ping/&lt;/code&gt; if no other condition matches
+before.&lt;/p&gt;
+
+&lt;p&gt;Notice also the &lt;code&gt;GET&lt;/code&gt;, &lt;code&gt;HEAD&lt;/code&gt;, that indicates that only does HTTP methods will
+be accepted, and any other will not be allowed, router will return a:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;405 Method Not Allowed
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To customise this reponse, the &lt;a href=&#34;https://violetear.io/post/notallowedhandler/&#34;&gt;&lt;code&gt;NotAllowedHandler&lt;/code&gt;&lt;/a&gt;
+can be used, it is a configurable &lt;a href=&#34;https://golang.org/pkg/net/http/#Handler&#34;&gt;http.Handler&lt;/a&gt;
+which is called when method not allowed.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Usage</title>
+      <link>https://violetear.io/post/usage/</link>
+      <pubDate>Sat, 11 Mar 2017 11:05:52 +0100</pubDate>
+      
+      <guid>https://violetear.io/post/usage/</guid>
+      <description>&lt;p&gt;Basic example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import (
+    &amp;quot;github.com/nbari/violetear&amp;quot;
+    &amp;quot;log&amp;quot;
+    &amp;quot;net/http&amp;quot;
+)
+
+func catchAll(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte(&amp;quot;I&#39;m catching all\n&amp;quot;))
+}
+
+func handleGET(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte(&amp;quot;I handle GET requests\n&amp;quot;))
+}
+
+func handlePOST(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte(&amp;quot;I handle POST requests\n&amp;quot;))
+}
+
+func handleUUID(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte(&amp;quot;I handle dynamic requests\n&amp;quot;))
+}
+
+func main() {
+    router := violetear.New()
+    router.LogRequests = true
+	router.RequestID = &amp;quot;Request-ID&amp;quot;
+
+    uuid := `[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}`
+    router.AddRegex(&amp;quot;:uuid&amp;quot;, uuid)
+
+    router.HandleFunc(&amp;quot;*&amp;quot;, catchAll)
+    router.HandleFunc(&amp;quot;/method&amp;quot;, handleGET, &amp;quot;GET&amp;quot;)
+    router.HandleFunc(&amp;quot;/method&amp;quot;, handlePOST, &amp;quot;POST&amp;quot;)
+    router.HandleFunc(&amp;quot;/:uuid&amp;quot;, handleUUID, &amp;quot;GET,HEAD&amp;quot;)
+
+    log.Fatal(http.ListenAndServe(&amp;quot;:8080&amp;quot;, router))
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Running this code will show something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;$ go run test.go
+2015/10/22 17:14:18 Adding path: * [ALL]
+2015/10/22 17:14:18 Adding path: /method [GET]
+2015/10/22 17:14:18 Adding path: /method [POST]
+2015/10/22 17:14:18 Adding path: /:uuid [GET,HEAD]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Using &lt;code&gt;router.Verbose = false&lt;/code&gt; will omit printing the paths.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;test.go contains the code show above&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Testing using curl or &lt;a href=&#34;https://github.com/jkbrzt/httpie&#34;&gt;http&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Any request &amp;lsquo;catch-all&amp;rsquo;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;$ http POST http://localhost:8080/
+HTTP/1.1 200 OK
+Content-Length: 17
+Content-Type: text/plain; charset=utf-8
+Date: Thu, 22 Oct 2015 15:18:49 GMT
+Request-Id: POST-1445527129854964669-1
+
+I&#39;m catching all
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A GET request:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;$ http http://localhost:8080/method
+HTTP/1.1 200 OK
+Content-Length: 22
+Content-Type: text/plain; charset=utf-8
+Date: Thu, 22 Oct 2015 15:43:25 GMT
+Request-Id: GET-1445528605902591921-1
+
+I handle GET requests
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A POST request:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;$ http POST http://localhost:8080/method
+HTTP/1.1 200 OK
+Content-Length: 23
+Content-Type: text/plain; charset=utf-8
+Date: Thu, 22 Oct 2015 15:44:28 GMT
+Request-Id: POST-1445528668557478433-2
+
+I handle POST requests
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A dynamic request using an &lt;a href=&#34;https://en.wikipedia.org/wiki/Universally_unique_identifier&#34;&gt;UUID&lt;/a&gt; as the URL resource:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;$ http http://localhost:8080/50244127-45F6-4210-A89D-FFB0DA039425
+HTTP/1.1 200 OK
+Content-Length: 26
+Content-Type: text/plain; charset=utf-8
+Date: Thu, 22 Oct 2015 15:45:33 GMT
+Request-Id: GET-1445528733916239110-5
+
+I handle dynamic requests
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Trying to use POST on the &lt;code&gt;/:uuid&lt;/code&gt; resource will cause a
+&lt;code&gt;Method not Allowed 405&lt;/code&gt; this because only &lt;code&gt;GET&lt;/code&gt; and &lt;code&gt;HEAD&lt;/code&gt;
+methods are allowed:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;$ http POST http://localhost:8080/50244127-45F6-4210-A89D-FFB0DA039425
+HTTP/1.1 405 Method Not Allowed
+Content-Length: 19
+Content-Type: text/plain; charset=utf-8
+Date: Thu, 22 Oct 2015 15:47:19 GMT
+Request-Id: POST-1445528839403536403-6
+X-Content-Type-Options: nosniff
+
+Method Not Allowed
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Middleware</title>
+      <link>https://violetear.io/post/middleware/</link>
+      <pubDate>Sat, 11 Mar 2017 11:04:30 +0100</pubDate>
+      
+      <guid>https://violetear.io/post/middleware/</guid>
+      <description>&lt;p&gt;Violetear uses &lt;a href=&#34;http://justinas.org/alice-painless-middleware-chaining-for-go/&#34;&gt;Alice&lt;/a&gt; to handle middleware.&lt;/p&gt;
+
+&lt;p&gt;Example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import (
+	&amp;quot;context&amp;quot;
+	&amp;quot;log&amp;quot;
+	&amp;quot;net/http&amp;quot;
+
+	&amp;quot;github.com/nbari/violetear&amp;quot;
+	&amp;quot;github.com/nbari/violetear/middleware&amp;quot;
+)
+
+func commonHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set(&amp;quot;X-app-Version&amp;quot;, &amp;quot;1.0&amp;quot;)
+		next.ServeHTTP(w, r)
+	})
+}
+
+func middlewareOne(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(&amp;quot;Executing middlewareOne&amp;quot;)
+		ctx := context.WithValue(r.Context(), &amp;quot;m1&amp;quot;, &amp;quot;m1&amp;quot;)
+		ctx = context.WithValue(ctx, &amp;quot;key&amp;quot;, 1)
+		next.ServeHTTP(w, r.WithContext(ctx))
+		log.Println(&amp;quot;Executing middlewareOne again&amp;quot;)
+	})
+}
+
+func middlewareTwo(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(&amp;quot;Executing middlewareTwo&amp;quot;)
+		if r.URL.Path != &amp;quot;/&amp;quot; {
+			return
+		}
+		ctx := context.WithValue(r.Context(), &amp;quot;m2&amp;quot;, &amp;quot;m2&amp;quot;)
+		next.ServeHTTP(w, r.WithContext(ctx))
+		log.Println(&amp;quot;Executing middlewareTwo again&amp;quot;)
+	})
+}
+
+func catchAll(w http.ResponseWriter, r *http.Request) {
+	log.Printf(&amp;quot;Executing finalHandler\nm1:%s\nkey:%d\nm2:%s\n&amp;quot;,
+		r.Context().Value(&amp;quot;m1&amp;quot;),
+		r.Context().Value(&amp;quot;key&amp;quot;),
+		r.Context().Value(&amp;quot;m2&amp;quot;),
+	)
+	w.Write([]byte(&amp;quot;I catch all&amp;quot;))
+}
+
+func foo(w http.ResponseWriter, r *http.Request) {
+	panic(&amp;quot;this will never happen, because of the return&amp;quot;)
+}
+
+func main() {
+	router := violetear.New()
+
+	stdChain := middleware.New(commonHeaders, middlewareOne, middlewareTwo)
+
+	router.Handle(&amp;quot;/&amp;quot;, stdChain.ThenFunc(catchAll), &amp;quot;GET,HEAD&amp;quot;)
+	router.Handle(&amp;quot;/foo&amp;quot;, stdChain.ThenFunc(foo), &amp;quot;GET,HEAD&amp;quot;)
+	router.HandleFunc(&amp;quot;/bar&amp;quot;, foo)
+
+	log.Fatal(http.ListenAndServe(&amp;quot;:8080&amp;quot;, router))
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Notice the use or router.Handle and router.HandleFunc when using middleware
+you normally would use route.Handle&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Request output example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;$ http http://localhost:8080/
+HTTP/1.1 200 OK
+Content-Length: 11
+Content-Type: text/plain; charset=utf-8
+Date: Thu, 22 Oct 2015 16:08:18 GMT
+Request-Id: GET-1445530098002701428-3
+X-App-Version: 1.0
+
+I catch all
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;On the server you will see something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;$ go run test.go
+2016/08/17 18:08:42 Adding path: / [GET,HEAD]
+2016/08/17 18:08:42 Adding path: /foo [GET,HEAD]
+2016/08/17 18:08:42 Adding path: /bar [ALL]
+2016/08/17 18:08:47 Executing middlewareOne
+2016/08/17 18:08:47 Executing middlewareTwo
+2016/08/17 18:08:47 Executing finalHandler
+m1:m1
+key:1
+m2:m2
+2016/08/17 18:08:47 Executing middlewareTwo again
+2016/08/17 18:08:47 Executing middlewareOne again
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Context &amp; Named parameters</title>
+      <link>https://violetear.io/post/context-named/</link>
+      <pubDate>Sat, 11 Mar 2017 11:04:29 +0100</pubDate>
+      
+      <guid>https://violetear.io/post/context-named/</guid>
+      <description>
+
+&lt;p&gt;In some cases there is a need to pass data across
+handlers/middlewares, for doing this &lt;strong&gt;Violetear&lt;/strong&gt; uses
+&lt;a href=&#34;https://golang.org/pkg/context/&#34;&gt;net/context&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import (
+    &amp;quot;context&amp;quot;
+    &amp;quot;fmt&amp;quot;
+    &amp;quot;log&amp;quot;
+    &amp;quot;net/http&amp;quot;
+
+    &amp;quot;github.com/nbari/violetear&amp;quot;
+)
+
+func catchAll(w http.ResponseWriter, r *http.Request) {
+    // Get &amp;amp; print the content of named-param *
+    params := r.Context().Value(violetear.ParamsKey).(violetear.Params)
+    fmt.Fprintf(w, &amp;quot;CatchAll value:, %q&amp;quot;, params[&amp;quot;*&amp;quot;])
+}
+
+func handleUUID(w http.ResponseWriter, r *http.Request) {
+    // get router params
+    params := r.Context().Value(violetear.ParamsKey).(violetear.Params)
+    // add a key-value pair to the context
+    ctx := context.WithValue(r.Context(), &amp;quot;key&amp;quot;, &amp;quot;my-value&amp;quot;)
+    // print current value for :uuid
+    fmt.Fprintf(w, &amp;quot;Named parameter: %q, key: %s&amp;quot;,
+        params[&amp;quot;:uuid&amp;quot;],
+        ctx.Value(&amp;quot;key&amp;quot;),
+    )
+}
+
+func main() {
+    router := violetear.New()
+
+    uuid := `[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}`
+    router.AddRegex(&amp;quot;:uuid&amp;quot;)
+
+    router.HandleFunc(&amp;quot;*&amp;quot;, catchAll)
+    router.HandleFunc(&amp;quot;/:uuid&amp;quot;, handleUUID, &amp;quot;GET,HEAD&amp;quot;)
+
+    log.Fatal(http.ListenAndServe(&amp;quot;:8080&amp;quot;, router))
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&#34;duplicated-named-parameters&#34;&gt;Duplicated named parameters&lt;/h1&gt;
+
+&lt;p&gt;In cases where the same named parameter is used multiple times, example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/test/:uuid/:uuid/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;An slice is created, for getting the values you need to do something like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    params := r.Context().Value(violetear.ParamsKey).(violetear.Params)
+    uuid := params[&amp;quot;:uuid&amp;quot;].([]string)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Notice the &lt;code&gt;:&lt;/code&gt; prefix when getting the named_parameters&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;After this you can access the slice like normal:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    fmt.Println(uuid[0], uuid[1])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;hr /&gt;
+
+&lt;h1 id=&#34;only-for-go-1-7&#34;&gt;Only for go &amp;lt; 1.7&lt;/h1&gt;
+
+&lt;p&gt;When using go &amp;lt; 1.7:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import &amp;quot;gopkg.in/nbari/violetear.v1&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;violetear.v1 and violetear.v2 don&amp;rsquo;t support versioning&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;For been available to use the &lt;strong&gt;Context&lt;/strong&gt; &lt;code&gt;ctx&lt;/code&gt; you need to do a type assertion:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cw := w.(*violetear.ResponseWriter)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To set a key-value pair you need to:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cw.Set(key, value)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cw.ctx = context.WithValue(cw.ctx, &amp;quot;key&amp;quot;, &amp;quot;my-value&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To retrieve a value:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cw.Get(value)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cw.ctx.Value(&amp;quot;key&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;You may need &lt;a href=&#34;https://golang.org/ref/spec#Type_assertions&#34;&gt;Type assertions&lt;/a&gt;: &lt;code&gt;cw.Get(value).(string)&lt;/code&gt; depending on your needs.&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Versioning</title>
+      <link>https://violetear.io/post/versioning/</link>
+      <pubDate>Sat, 11 Mar 2017 11:04:28 +0100</pubDate>
+      
+      <guid>https://violetear.io/post/versioning/</guid>
+      <description>&lt;p&gt;TODO&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>RequestID</title>
+      <link>https://violetear.io/post/requestid/</link>
+      <pubDate>Sat, 11 Mar 2017 11:04:14 +0100</pubDate>
+      
+      <guid>https://violetear.io/post/requestid/</guid>
+      <description>&lt;p&gt;To keep track of the &amp;ldquo;requests&amp;rdquo; an existing &amp;ldquo;request ID&amp;rdquo; header can be used,
+if the header name for example is &lt;strong&gt;X-Appengine-Request-Log-Id&lt;/strong&gt; therefore to
+continue using it, the router needs to know the name, example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;router := violetear.New()
+router.RequestID = &amp;quot;X-Appengine-Request-Log-Id&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If the proxy is using another name, for example &lt;strong&gt;RID&lt;/strong&gt; then use something like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;router := violetear.New()
+router.RequestID = &amp;quot;RID&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If &lt;code&gt;router.RequestID&lt;/code&gt; is not set, no &amp;ldquo;request ID&amp;rdquo; is going to be added to the
+headers. This can be extended using a middleware same has the logger check the
+AppEngine example.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>NotFoundHandler</title>
+      <link>https://violetear.io/post/notfoundhandler/</link>
+      <pubDate>Sat, 11 Mar 2017 11:03:43 +0100</pubDate>
+      
+      <guid>https://violetear.io/post/notfoundhandler/</guid>
+      <description>&lt;p&gt;For defining a custom &lt;code&gt;http.Handler&lt;/code&gt; to handle &lt;strong&gt;404 Not Found&lt;/strong&gt; example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;...
+
+func my404() http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        http.Error(w, &amp;quot;my custom 404 message&amp;quot;, 404)
+    })
+}
+
+func main() {
+    router := violetear.New()
+    router.NotFoundHandler = my404()
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>NotAllowedHandler</title>
+      <link>https://violetear.io/post/notallowedhandler/</link>
+      <pubDate>Sat, 11 Mar 2017 11:03:40 +0100</pubDate>
+      
+      <guid>https://violetear.io/post/notallowedhandler/</guid>
+      <description>&lt;p&gt;&lt;code&gt;NotAllowedHandler&lt;/code&gt; configurable http.Handler which is called when method not allowed:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;405 Method Not Allowed
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;...
+
+func my405() http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        http.Error(w, &amp;quot;my custom 405 message&amp;quot;, 405)
+    })
+}
+
+func main() {
+    router := violetear.New()
+    router.NotAllowedHandler = my405()
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>violetear</title>
+      <link>https://violetear.io/about/</link>
+      <pubDate>Sat, 11 Mar 2017 09:57:00 +0100</pubDate>
+      
+      <guid>https://violetear.io/about/</guid>
+      <description>
+
+&lt;h1 id=&#34;what-is-violetear&#34;&gt;What is violetear?&lt;/h1&gt;
+
+&lt;p&gt;An HTTP router, extending the capabilities of the default
+&lt;a href=&#34;https://golang.org/pkg/net/http/#ServeMux&#34;&gt;go mux&lt;/a&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;features&#34;&gt;Features&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Common context between middleware.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://violetear.io/posts/context-named.md&#34;&gt;Context &amp;amp; Named&lt;/a&gt; parameters&lt;/li&gt;
+&lt;li&gt;Easy &lt;a href=&#34;https://violetear.io/post/middleware&#34;&gt;middleware&lt;/a&gt; (satisfies the http.Handler interface).&lt;/li&gt;
+&lt;li&gt;HTTP/2 native support&lt;/li&gt;
+&lt;li&gt;Support for &lt;a href=&#34;https://violetear.io/post/usage&#34;&gt;static and dynamic&lt;/a&gt; routing.&lt;/li&gt;
+&lt;li&gt;Trace &lt;a href=&#34;https://violetear.io/post/requestid&#34;&gt;Request-ID&lt;/a&gt; per request.&lt;/li&gt;
+&lt;li&gt;Versioning &lt;code&gt;application/vnd.*&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
