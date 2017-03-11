@@ -693,7 +693,7 @@ router.PanicHandler = myPanicHandler()
 &lt;li&gt;Common context between middleware.&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://violetear.org/posts/context-named.md&#34;&gt;Context &amp;amp; Named&lt;/a&gt; parameters&lt;/li&gt;
 &lt;li&gt;Easy &lt;a href=&#34;https://violetear.org/post/middleware&#34;&gt;middleware&lt;/a&gt; (satisfies the http.Handler interface).&lt;/li&gt;
-&lt;li&gt;HTTP/2 native support&lt;/li&gt;
+&lt;li&gt;HTTP/2 native support &lt;a href=&#34;https://gist.github.com/nbari/e19f195c233c92061e27f5beaaae45a3&#34;&gt;Push Example&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Support for &lt;a href=&#34;https://violetear.org/post/usage&#34;&gt;static and dynamic&lt;/a&gt; routing.&lt;/li&gt;
 &lt;li&gt;Trace &lt;a href=&#34;https://violetear.org/post/requestid&#34;&gt;Request-ID&lt;/a&gt; per request.&lt;/li&gt;
 &lt;li&gt;Versioning &lt;code&gt;application/vnd.*&lt;/code&gt;&lt;/li&gt;
