@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>violetear</title>
-    <link>https://violetear.io/index.xml</link>
+    <link>https://violetear.org/index.xml</link>
     <description>Recent content on violetear</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright> </copyright>
     <lastBuildDate>Sat, 11 Mar 2017 10:11:01 +0000</lastBuildDate>
-    <atom:link href="https://violetear.io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://violetear.org/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>How it works</title>
-      <link>https://violetear.io/post/how-it-works/</link>
+      <link>https://violetear.org/post/how-it-works/</link>
       <pubDate>Sat, 11 Mar 2017 10:11:01 +0000</pubDate>
       
-      <guid>https://violetear.io/post/how-it-works/</guid>
+      <guid>https://violetear.org/post/how-it-works/</guid>
       <description>&lt;p&gt;The router is capable off handle any kind or URI, static,
 dynamic or catchall and based on the
 &lt;a href=&#34;http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html&#34;&gt;HTTP request Method&lt;/a&gt;
@@ -67,7 +67,7 @@ be accepted, and any other will not be allowed, router will return a:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;405 Method Not Allowed
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;To customise this reponse, the &lt;a href=&#34;https://violetear.io/post/notallowedhandler/&#34;&gt;&lt;code&gt;NotAllowedHandler&lt;/code&gt;&lt;/a&gt;
+&lt;p&gt;To customise this reponse, the &lt;a href=&#34;https://violetear.org/post/notallowedhandler/&#34;&gt;&lt;code&gt;NotAllowedHandler&lt;/code&gt;&lt;/a&gt;
 can be used, it is a configurable &lt;a href=&#34;https://golang.org/pkg/net/http/#Handler&#34;&gt;http.Handler&lt;/a&gt;
 which is called when method not allowed.&lt;/p&gt;
 </description>
@@ -75,10 +75,10 @@ which is called when method not allowed.&lt;/p&gt;
     
     <item>
       <title>Usage</title>
-      <link>https://violetear.io/post/usage/</link>
+      <link>https://violetear.org/post/usage/</link>
       <pubDate>Sat, 11 Mar 2017 11:05:52 +0100</pubDate>
       
-      <guid>https://violetear.io/post/usage/</guid>
+      <guid>https://violetear.org/post/usage/</guid>
       <description>&lt;p&gt;Basic example:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
@@ -206,10 +206,10 @@ Method Not Allowed
     
     <item>
       <title>Middleware</title>
-      <link>https://violetear.io/post/middleware/</link>
+      <link>https://violetear.org/post/middleware/</link>
       <pubDate>Sat, 11 Mar 2017 11:04:30 +0100</pubDate>
       
-      <guid>https://violetear.io/post/middleware/</guid>
+      <guid>https://violetear.org/post/middleware/</guid>
       <description>&lt;p&gt;Violetear uses &lt;a href=&#34;http://justinas.org/alice-painless-middleware-chaining-for-go/&#34;&gt;Alice&lt;/a&gt; to handle middleware.&lt;/p&gt;
 
 &lt;p&gt;Example:&lt;/p&gt;
@@ -318,10 +318,10 @@ m2:m2
     
     <item>
       <title>Context &amp; Named parameters</title>
-      <link>https://violetear.io/post/context-named/</link>
+      <link>https://violetear.org/post/context-named/</link>
       <pubDate>Sat, 11 Mar 2017 11:04:29 +0100</pubDate>
       
-      <guid>https://violetear.io/post/context-named/</guid>
+      <guid>https://violetear.org/post/context-named/</guid>
       <description>
 
 &lt;p&gt;In some cases there is a need to pass data across
@@ -442,20 +442,20 @@ func main() {
     
     <item>
       <title>Versioning</title>
-      <link>https://violetear.io/post/versioning/</link>
+      <link>https://violetear.org/post/versioning/</link>
       <pubDate>Sat, 11 Mar 2017 11:04:28 +0100</pubDate>
       
-      <guid>https://violetear.io/post/versioning/</guid>
+      <guid>https://violetear.org/post/versioning/</guid>
       <description>&lt;p&gt;TODO&lt;/p&gt;
 </description>
     </item>
     
     <item>
       <title>RequestID</title>
-      <link>https://violetear.io/post/requestid/</link>
+      <link>https://violetear.org/post/requestid/</link>
       <pubDate>Sat, 11 Mar 2017 11:04:14 +0100</pubDate>
       
-      <guid>https://violetear.io/post/requestid/</guid>
+      <guid>https://violetear.org/post/requestid/</guid>
       <description>&lt;p&gt;To keep track of the &amp;ldquo;requests&amp;rdquo; an existing &amp;ldquo;request ID&amp;rdquo; header can be used,
 if the header name for example is &lt;strong&gt;X-Appengine-Request-Log-Id&lt;/strong&gt; therefore to
 continue using it, the router needs to know the name, example:&lt;/p&gt;
@@ -478,10 +478,10 @@ AppEngine example.&lt;/p&gt;
     
     <item>
       <title>NotFoundHandler</title>
-      <link>https://violetear.io/post/notfoundhandler/</link>
+      <link>https://violetear.org/post/notfoundhandler/</link>
       <pubDate>Sat, 11 Mar 2017 11:03:43 +0100</pubDate>
       
-      <guid>https://violetear.io/post/notfoundhandler/</guid>
+      <guid>https://violetear.org/post/notfoundhandler/</guid>
       <description>&lt;p&gt;For defining a custom &lt;code&gt;http.Handler&lt;/code&gt; to handle &lt;strong&gt;404 Not Found&lt;/strong&gt; example:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;...
@@ -502,10 +502,10 @@ func main() {
     
     <item>
       <title>NotAllowedHandler</title>
-      <link>https://violetear.io/post/notallowedhandler/</link>
+      <link>https://violetear.org/post/notallowedhandler/</link>
       <pubDate>Sat, 11 Mar 2017 11:03:40 +0100</pubDate>
       
-      <guid>https://violetear.io/post/notallowedhandler/</guid>
+      <guid>https://violetear.org/post/notallowedhandler/</guid>
       <description>&lt;p&gt;&lt;code&gt;NotAllowedHandler&lt;/code&gt; configurable http.Handler which is called when method not allowed:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;405 Method Not Allowed
@@ -531,10 +531,10 @@ func main() {
     
     <item>
       <title>violetear</title>
-      <link>https://violetear.io/about/</link>
+      <link>https://violetear.org/about/</link>
       <pubDate>Sat, 11 Mar 2017 09:57:00 +0100</pubDate>
       
-      <guid>https://violetear.io/about/</guid>
+      <guid>https://violetear.org/about/</guid>
       <description>
 
 &lt;h1 id=&#34;what-is-violetear&#34;&gt;What is violetear?&lt;/h1&gt;
@@ -548,11 +548,11 @@ func main() {
 
 &lt;ul&gt;
 &lt;li&gt;Common context between middleware.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://violetear.io/posts/context-named.md&#34;&gt;Context &amp;amp; Named&lt;/a&gt; parameters&lt;/li&gt;
-&lt;li&gt;Easy &lt;a href=&#34;https://violetear.io/post/middleware&#34;&gt;middleware&lt;/a&gt; (satisfies the http.Handler interface).&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://violetear.org/posts/context-named.md&#34;&gt;Context &amp;amp; Named&lt;/a&gt; parameters&lt;/li&gt;
+&lt;li&gt;Easy &lt;a href=&#34;https://violetear.org/post/middleware&#34;&gt;middleware&lt;/a&gt; (satisfies the http.Handler interface).&lt;/li&gt;
 &lt;li&gt;HTTP/2 native support&lt;/li&gt;
-&lt;li&gt;Support for &lt;a href=&#34;https://violetear.io/post/usage&#34;&gt;static and dynamic&lt;/a&gt; routing.&lt;/li&gt;
-&lt;li&gt;Trace &lt;a href=&#34;https://violetear.io/post/requestid&#34;&gt;Request-ID&lt;/a&gt; per request.&lt;/li&gt;
+&lt;li&gt;Support for &lt;a href=&#34;https://violetear.org/post/usage&#34;&gt;static and dynamic&lt;/a&gt; routing.&lt;/li&gt;
+&lt;li&gt;Trace &lt;a href=&#34;https://violetear.org/post/requestid&#34;&gt;Request-ID&lt;/a&gt; per request.&lt;/li&gt;
 &lt;li&gt;Versioning &lt;code&gt;application/vnd.*&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
