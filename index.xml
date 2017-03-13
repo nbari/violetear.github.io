@@ -561,7 +561,7 @@ router.HandleFunc(&amp;quot;/hello#violetear.v2&amp;quot;, handleHelloV2, &amp;q
 
 &lt;p&gt;Using the http client:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ http 0:8000/hello &amp;quot;Accept: aplplication/vnd.violetear.v2&amp;quot;
+&lt;pre&gt;&lt;code&gt;$ http 0:8000/hello &amp;quot;Accept: application/vnd.violetear.v2&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Using curl:&lt;/p&gt;
