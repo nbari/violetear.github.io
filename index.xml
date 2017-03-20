@@ -350,11 +350,14 @@ func catchAll(w http.ResponseWriter, r *http.Request) {
 func handleUUID(w http.ResponseWriter, r *http.Request) {
     // get router params
     params := r.Context().Value(violetear.ParamsKey).(violetear.Params)
+	// using GetParam
+	uuid := violetear.GetParam(&amp;quot;uuid&amp;quot;, r)
     // add a key-value pair to the context
     ctx := context.WithValue(r.Context(), &amp;quot;key&amp;quot;, &amp;quot;my-value&amp;quot;)
     // print current value for :uuid
     fmt.Fprintf(w, &amp;quot;Named parameter: %q, key: %s&amp;quot;,
         params[&amp;quot;:uuid&amp;quot;],
+        uuid,
         ctx.Value(&amp;quot;key&amp;quot;),
     )
 }
@@ -379,6 +382,8 @@ func main() {
 &lt;p&gt;In cases where the same named parameter is used multiple times, example:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;/test/:uuid/:uuid/
+        |     |
+ index  0     1
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;An slice is created, for getting the values you need to do something like:&lt;/p&gt;
@@ -391,12 +396,63 @@ func main() {
 &lt;p&gt;Notice the &lt;code&gt;:&lt;/code&gt; prefix when getting the named_parameters&lt;/p&gt;
 &lt;/blockquote&gt;
 
+&lt;p&gt;Or by using &lt;code&gt;GetParams&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    uuid := violetear.GetParams(&amp;quot;uuid&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
 &lt;p&gt;After this you can access the slice like normal:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;    fmt.Println(uuid[0], uuid[1])
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;In case you would only need the second param this could be used:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    uuid := violetear.GetParam(&amp;quot;uuid&amp;quot;, r, 1)
+&lt;/code&gt;&lt;/pre&gt;
+
 &lt;hr /&gt;
+
+&lt;h1 id=&#34;getparam-getparams&#34;&gt;GetParam &amp;amp; GetParams&lt;/h1&gt;
+
+&lt;p&gt;This methods help to get an specific param or all the params.&lt;/p&gt;
+
+&lt;p&gt;To get a param:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;param := violetear.GetParam(&amp;quot;param&amp;quot;, r)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;When having duplicates, if an index is not specified, it will return the first one, example:&lt;/p&gt;
+
+&lt;p&gt;After defining this dynamic routes:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;uuid := `[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}`
+router.AddRegex(&amp;quot;:uuid&amp;quot;)
+router.HandleFunc(&amp;quot;/test/:uuid/:uuid&amp;quot;, handleUUID, &amp;quot;GET,HEAD&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For this request:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;/test/78F204D2-26D9-409F-BE81-2E5D061E1FA1/33A7B724-1498-4A5A-B29B-AD4E31824234
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To get the first &lt;code&gt;:uuid&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;uuid := violetear.GetParam(&amp;quot;uuid&amp;quot;, r)
+// uuid == 78F204D2-26D9-409F-BE81-2E5D061E1FA1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To get the second &lt;code&gt;:uuid&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;uuid := violetear.GetParam(&amp;quot;uuid&amp;quot;, r, 1)
+// uuid == 33A7B724-1498-4A5A-B29B-AD4E31824234
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To get all the params:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;uuids := violetear.GetParams(&amp;quot;uuid&amp;quot;)
+// uuids == []string{&amp;quot;78F204D2-26D9-409F-BE81-2E5D061E1FA1&amp;quot;, &amp;quot;33A7B724-1498-4A5A-B29B-AD4E31824234&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h1 id=&#34;only-for-go-1-7&#34;&gt;Only for go &amp;lt; 1.7&lt;/h1&gt;
 

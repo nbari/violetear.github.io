@@ -92,11 +92,14 @@ func catchAll(w http.ResponseWriter, r *http.Request) {
 func handleUUID(w http.ResponseWriter, r *http.Request) {
     // get router params
     params := r.Context().Value(violetear.ParamsKey).(violetear.Params)
+	// using GetParam
+	uuid := violetear.GetParam(&quot;uuid&quot;, r)
     // add a key-value pair to the context
     ctx := context.WithValue(r.Context(), &quot;key&quot;, &quot;my-value&quot;)
     // print current value for :uuid
     fmt.Fprintf(w, &quot;Named parameter: %q, key: %s&quot;,
         params[&quot;:uuid&quot;],
+        uuid,
         ctx.Value(&quot;key&quot;),
     )
 }
@@ -121,6 +124,8 @@ func main() {
 <p>In cases where the same named parameter is used multiple times, example:</p>
 
 <pre><code>/test/:uuid/:uuid/
+        |     |
+ index  0     1
 </code></pre>
 
 <p>An slice is created, for getting the values you need to do something like:</p>
@@ -133,12 +138,63 @@ func main() {
 <p>Notice the <code>:</code> prefix when getting the named_parameters</p>
 </blockquote>
 
+<p>Or by using <code>GetParams</code>:</p>
+
+<pre><code>    uuid := violetear.GetParams(&quot;uuid&quot;)
+</code></pre>
+
 <p>After this you can access the slice like normal:</p>
 
 <pre><code>    fmt.Println(uuid[0], uuid[1])
 </code></pre>
 
+<p>In case you would only need the second param this could be used:</p>
+
+<pre><code>    uuid := violetear.GetParam(&quot;uuid&quot;, r, 1)
+</code></pre>
+
 <hr />
+
+<h1 id="getparam-getparams">GetParam &amp; GetParams</h1>
+
+<p>This methods help to get an specific param or all the params.</p>
+
+<p>To get a param:</p>
+
+<pre><code>param := violetear.GetParam(&quot;param&quot;, r)
+</code></pre>
+
+<p>When having duplicates, if an index is not specified, it will return the first one, example:</p>
+
+<p>After defining this dynamic routes:</p>
+
+<pre><code class="language-go">uuid := `[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}`
+router.AddRegex(&quot;:uuid&quot;)
+router.HandleFunc(&quot;/test/:uuid/:uuid&quot;, handleUUID, &quot;GET,HEAD&quot;)
+</code></pre>
+
+<p>For this request:</p>
+
+<pre><code class="language-html">/test/78F204D2-26D9-409F-BE81-2E5D061E1FA1/33A7B724-1498-4A5A-B29B-AD4E31824234
+</code></pre>
+
+<p>To get the first <code>:uuid</code>:</p>
+
+<pre><code class="language-go">uuid := violetear.GetParam(&quot;uuid&quot;, r)
+// uuid == 78F204D2-26D9-409F-BE81-2E5D061E1FA1
+</code></pre>
+
+<p>To get the second <code>:uuid</code>:</p>
+
+<pre><code class="language-go">uuid := violetear.GetParam(&quot;uuid&quot;, r, 1)
+// uuid == 33A7B724-1498-4A5A-B29B-AD4E31824234
+</code></pre>
+
+<p>To get all the params:</p>
+
+<pre><code class="language-go">uuids := violetear.GetParams(&quot;uuid&quot;)
+// uuids == []string{&quot;78F204D2-26D9-409F-BE81-2E5D061E1FA1&quot;, &quot;33A7B724-1498-4A5A-B29B-AD4E31824234&quot;}
+</code></pre>
 
 <h1 id="only-for-go-1-7">Only for go &lt; 1.7</h1>
 
