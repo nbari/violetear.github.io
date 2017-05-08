@@ -7,7 +7,7 @@
 		<meta name="author" content="violetear">
 		<meta name="description" content="Go HTTP router">
 		<meta name="keywords" content="router, http2, dynamic, rest, versioning">
-		<meta name="generator" content="Hugo 0.19" />
+		<meta name="generator" content="Hugo 0.20.7" />
 		<title>Usage &middot; violetear</title>
         <link rel="apple-touch-icon" sizes="57x57" href="https://violetear.org/images/apple-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="https://violetear.org/images/apple-icon-60x60.png">
@@ -64,7 +64,9 @@
                     </h2>
                 </header>
                 <section id="post-body">
-                    <p>Basic example:</p>
+                    
+
+<p>Basic example:</p>
 
 <pre><code class="language-go">package main
 
@@ -93,12 +95,13 @@ func handleUUID(w http.ResponseWriter, r *http.Request) {
 func main() {
     router := violetear.New()
     router.LogRequests = true
-	router.RequestID = &quot;Request-ID&quot;
+    router.RequestID = &quot;Request-ID&quot;
 
     uuid := `[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}`
     router.AddRegex(&quot;:uuid&quot;, uuid)
 
     router.HandleFunc(&quot;*&quot;, catchAll)
+    router.HandleFunc(&quot;/method&quot;, catchALL) // will handle all methods but GET, POST
     router.HandleFunc(&quot;/method&quot;, handleGET, &quot;GET&quot;)
     router.HandleFunc(&quot;/method&quot;, handlePOST, &quot;POST&quot;)
     router.HandleFunc(&quot;/:uuid&quot;, handleUUID, &quot;GET,HEAD&quot;)
@@ -186,6 +189,22 @@ X-Content-Type-Options: nosniff
 
 Method Not Allowed
 </code></pre>
+
+<h2 id="all">ALL</h2>
+
+<p>If no request method is defined <code>ALL</code> methods will be defined.</p>
+
+<h3 id="static-routes-over-regular-expressions">static routes over regular expressions</h3>
+
+<p>Static routes always will win, have preference over regular expressions, for example:</p>
+
+<pre><code class="language-go">router.AddRegex(&quot;:uuid&quot;, `\w+`)
+router.HandleFunc(&quot;/method&quot;, methodGET, &quot;GET, HEAD&quot;)
+router.HandleFunc(&quot;/:any&quot;, methodALL)
+</code></pre>
+
+<p>All request to <code>/method</code> using methods <code>GET</code> and <code>HEAD</code> will be handled by
+<code>methodGET</code> and all others by method <code>/methodALL</code></p>
 
                 </section>
             </article>

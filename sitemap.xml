@@ -58,6 +58,11 @@
   </url>
   
   <url>
+    <loc>https://violetear.org/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://violetear.org/</loc>
     <lastmod>2017-03-11T10:11:01+00:00</lastmod>
     <priority>0</priority>
