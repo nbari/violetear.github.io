@@ -512,7 +512,7 @@ span.code {
 
 pre {
     font-family: Menlo, Monaco, Courier;
-    white-space: pre-wrap;
+    white-space: space;
     /*border: 1px solid #ddd;*/
     padding: 20px;
     background-color: #fdfdfd;
