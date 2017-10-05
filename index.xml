@@ -131,7 +131,7 @@ One of the main constraints found at the beginning was how to deal with static a
       
       <guid>https://violetear.org/about/</guid>
       <description> What is violetear? An HTTP router, extending the capabilities of the default go mux
-Features  Common context between middleware. Context &amp;amp; Named parameters Easy middleware (satisfies the http.Handler interface). HTTP/2 native support Push Example Support for static and dynamic routing. Trace Request-ID per request. Versioning application/vnd.*  </description>
+Features  0 memory allocations for static routes. Common context between middleware. Context &amp;amp; Named parameters Easy middleware (satisfies the http.Handler interface). HTTP/2 native support Push Example Support for static and dynamic routing. Trace Request-ID per request. Versioning application/vnd.*  </description>
     </item>
     
   </channel>
