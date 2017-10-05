@@ -113,5 +113,16 @@ Example:
 func myPanicHandler() http.HandlerFunc { return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { http.Error(w, &amp;quot;custom panic message&amp;quot;, 500) }) } router := violetear.New() router.PanicHandler = myPanicHandler()  </description>
     </item>
     
+    <item>
+      <title>Benchmarks and profiling</title>
+      <link>https://violetear.org/post/allocs/</link>
+      <pubDate>Sat, 11 Mar 2017 11:03:40 +0200</pubDate>
+      
+      <guid>https://violetear.org/post/allocs/</guid>
+      <description>Go is fast, but when doing things carefully, besides being faster is very light.
+The history about violetear is not much different from many others - an HTTP router capable of handling any requests.
+One of the main constraints found at the beginning was how to deal with static and dynamic URLs, let&amp;rsquo;s face it if you want to replace an important component of your current architecture you should try to break as less as possible - highly trained monkeys hate changes.</description>
+    </item>
+    
   </channel>
 </rss>

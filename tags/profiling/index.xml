@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Profiling on violetear</title>
+    <link>https://violetear.org/tags/profiling/</link>
+    <description>Recent content in Profiling on violetear</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright> </copyright>
+    <lastBuildDate>Sat, 11 Mar 2017 11:03:40 +0200</lastBuildDate>
+    
+	<atom:link href="https://violetear.org/tags/profiling/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Benchmarks and profiling</title>
+      <link>https://violetear.org/post/allocs/</link>
+      <pubDate>Sat, 11 Mar 2017 11:03:40 +0200</pubDate>
+      
+      <guid>https://violetear.org/post/allocs/</guid>
+      <description>Go is fast, but when doing things carefully, besides being faster is very light.
+The history about violetear is not much different from many others - an HTTP router capable of handling any requests.
+One of the main constraints found at the beginning was how to deal with static and dynamic URLs, let&amp;rsquo;s face it if you want to replace an important component of your current architecture you should try to break as less as possible - highly trained monkeys hate changes.</description>
+    </item>
+    
+  </channel>
+</rss>

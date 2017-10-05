@@ -7,9 +7,37 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright> </copyright>
+    <lastBuildDate>Sat, 11 Mar 2017 11:03:40 +0200</lastBuildDate>
     
 	<atom:link href="https://violetear.org/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Allocs</title>
+      <link>https://violetear.org/tags/allocs/</link>
+      <pubDate>Sat, 11 Mar 2017 11:03:40 +0200</pubDate>
+      
+      <guid>https://violetear.org/tags/allocs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Benchmark</title>
+      <link>https://violetear.org/tags/benchmark/</link>
+      <pubDate>Sat, 11 Mar 2017 11:03:40 +0200</pubDate>
+      
+      <guid>https://violetear.org/tags/benchmark/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Profiling</title>
+      <link>https://violetear.org/tags/profiling/</link>
+      <pubDate>Sat, 11 Mar 2017 11:03:40 +0200</pubDate>
+      
+      <guid>https://violetear.org/tags/profiling/</guid>
+      <description></description>
+    </item>
     
   </channel>
 </rss>
