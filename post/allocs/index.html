@@ -82,7 +82,7 @@
 router capable of handling any requests.</p>
 
 <p>One of the main constraints found at the beginning was how to deal with static
-and dynamic URLs, let&rsquo;s face it if you want to replace an important component of
+and dynamic URL&rsquo;s. Let&rsquo;s face it, if you want to replace an important component of
 your current architecture you should try to break as less as possible - highly
 trained monkeys hate changes. 🐒</p>
 
@@ -91,12 +91,12 @@ trained monkeys hate changes. 🐒</p>
 <pre><code class="language-html">host.tld/static/8E605AD7-554A-450D-A72D-D0098D336E8E/127.0.0.1
         \_____/\_____________________________________________/
            |                         |
-         static                   dynamic
+         static                   dynamic        Allow only method PUT
 
 host.tld/static/127.0.0.1/8E605AD7-554A-450D-A72D-D0098D336E8E
         \_____/\_____________________________________________/
            |                         |
-         static                   dynamic
+         static                   dynamic        Allow only methods GET and HEAD
 </code></pre>
 
 <p>Which could be represented in the router like:</p>
@@ -133,7 +133,7 @@ using them where they were not required, they came with a big penalty.</p>
 <p>Go comes with &ldquo;batteries included&rdquo; and is very easy to start profiling the code by the
 use of the package <a href="https://golang.org/pkg/net/http/pprof/">pprof</a>.</p>
 
-<p>The first goal was find the bottlenecks, the following code was used for this:</p>
+<p>The first goal was to find the bottlenecks. The following code was used for this:</p>
 
 <pre><code class="language-go">package main
 
@@ -213,17 +213,18 @@ end
 ...
 </code></pre>
 
-<p>It is very basic but allows to test the router with both static and dynamic
-handlers.</p>
+<p>It is very basic but allows to test the router with both static
+and dynamic handlers - source code for this can be found
+<a href="https://github.com/nbari/go-sandbox/tree/master/profile-violetear/benchmark">here</a>.</p>
 
-<p>Once everything is setup, the router should be up and running and listening for
+<p>Once everything is setup, the router should be up, running and listening for
 requests, <code>wrk</code> is called like mentioned before and in another terminal this
 command is used:</p>
 
 <pre><code class="language-sh">go tool pprof http://0:8080/debug/pprof/heap
 </code></pre>
 
-<p>After running the command you enter into an interactive mode, there I typed
+<p>After running the command you enter into an interactive mode. There I typed
 <code>top</code> and got this output:</p>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="">(pprof) top
@@ -246,8 +247,8 @@ command is used:</p>
 <p>Notice lines 7 and 10</p>
 </blockquote>
 
-<p>Still in the interactive mode, I typed: <code>list splitPath</code> this helps to show the
-lines of code, this was the output:</p>
+<p>Still in the interactive mode, I typed: <code>list splitPath</code> which helps to show the
+lines of code. This was the output:</p>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="">(pprof) list splitPath
 </span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="">Total: 2.02MB
@@ -267,8 +268,8 @@ lines of code, this was the output:</p>
 </span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span><span style="">(pprof)</span></code></pre>
 </div>
 
-<p>Was evident that splitting the path by using a regular expression was the most
-efficient way to go, I changed the function to someethinig like this:</p>
+<p>Was evident that splitting the path by using a regular expression was not the most
+efficient way to go. I changed the function to something like this:</p>
 
 <pre><code class="language-go">func (r *Router) splitPath(p string) []string {
         pathParts := strings.FieldsFunc(p, func(c rune) bool {
@@ -326,7 +327,7 @@ func BenchmarkRouterDynamic(b *testing.B) {
 <pre><code>go test -run=^$ -bench=.
 </code></pre>
 
-<p>The output was a small win of 3 allocation less:</p>
+<p>The output was a small win of 3 allocation less 🎉</p>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="">$ go test -run=^$ -bench=.
 </span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="">2017/10/02 18:47:23 Adding path: /hello [GET,HEAD]
@@ -346,7 +347,7 @@ func BenchmarkRouterDynamic(b *testing.B) {
 </span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span><span style="">ok      github.com/nbari/violetear      3.380s</span></code></pre>
 </div>
 
-<p>Before doing the changes this was the output 11 allocations for static routes
+<p>Before doing the changes this was the output: 11 allocations for static routes
 and 14 for dynamic 🐢</p>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="">$ go test -run=^$ -bench=.
@@ -382,7 +383,7 @@ profiled and a stack trace printed on each object's allocation and free.
 
 <p>To build the tests:</p>
 
-<pre><code class="language-sh">    $ go test -c
+<pre><code class="language-sh">go test -c
 </code></pre>
 
 <p>And to run the tests writing to a file all the output:</p>
@@ -390,7 +391,7 @@ profiled and a stack trace printed on each object's allocation and free.
 <pre><code class="language-sh">GODEBUG=allocfreetrace=1 ./test.test -test.run=none -test.bench=BenchmarkRouter -test.benchtime=10ms 2&gt;trace.log
 </code></pre>
 
-<p>After doing all this I was available to save up tu 90% of the allocations for
+<p>After doing all this I was available to save up to 90% of the allocations for
 static routes, from 11 to 1:</p>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="">$ go test -run=^$ -bench=.
@@ -436,13 +437,13 @@ static routes, from 11 to 1:</p>
 </span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">18</span><span style="">ok      github.com/nbari/violetear      4.144s</span></code></pre>
 </div>
 
-<p>The router since always has been behaving quite well this mainly thanks to Go
+<p>The router since always has been behaving quite well, this mainly thanks to Go
 itself and well, to the modest traffic it has been handling.</p>
 
 <p>While doing some benchmarks and simulating some DDOS I found some patterns. All
-were related to the way the <code>request.URL.Path</code> was handled, the thing I notice
-is that the bigger the request path was the more memory allocations where used,
-at the end was pretty much-making sense since by splitting the path by &lsquo;/&rsquo; a
+were related to the way the <code>request.URL.Path</code> was handled. The thing I noticed
+was that the bigger the request path was the more memory allocations were used.
+At the end was pretty much making sense since by splitting the path by &lsquo;/&rsquo; a
 slice was returned with all the possible parts of the path.</p>
 
 <p>For example, for a request like:</p>
@@ -456,32 +457,38 @@ slice was returned with all the possible parts of the path.</p>
 </code></pre>
 
 <p>In many cases, this would never be defined as routes and could probably just be
-server by a <strong>catch-all(*)</strong> handler.</p>
+served by a <strong>catch-all(*)</strong> handler.</p>
 
-<p>To fix this, instead of splitting and returning a slice, the path is now parsed,
-each component of the path from left to right is used to find within the set of
-defined handlers, so for the same request shown before, the router converts it
+<p>To fix this, instead of splitting and returning a slice, the path is now parsed.
+Each component of the path from left to right is used to find within the set of
+defined handlers; so for the same request shown before, the router converts it
 to:</p>
 
 <pre><code class="language-go">key := &quot;the&quot;
 path := &quot;/quick/brown/fox/jumps/over/the/lazy/dog&quot;
 </code></pre>
 
-<p>It searches for a possible handler named <code>the</code> and if not will try again using
-<code>/the/quick</code>:</p>
+<p>It searches for a possible handler named <code>the</code> and if found then next will try again using
+<code>quick</code> and shorting the path to <code>/brown/fox/jumps/over/the/lazy/dog</code>:</p>
 
 <pre><code class="language-go">key := &quot;quick&quot;
 path := &quot;/brown/fox/jumps/over/the/lazy/dog&quot;
+
+key := &quot;brown&quot;
+path := &quot;/fox/jumps/over/the/lazy/dog&quot;
+
+key := &quot;fox&quot;
+path := &quot;/jumps/over/the/lazy/dog&quot;
 </code></pre>
 
-<p>Ans so on until a handler matches the <code>key</code> or a 404 is returned.</p>
+<p>And so on until a handler matches the <code>key</code> or a <a href="/post/notfoundhandler/">404 is returned</a>.</p>
 
 <p>This by principle made the router more efficient but now the challenge was how
 to parse the path without creating allocations.</p>
 
 <p>The tricky part was to avoid concatenating strings runes or bytes, by just using
 the existing path and return chunks of the slice did the trick, the current code
-is this:</p>
+look like is this:</p>
 
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="color:#66d9ef">func</span><span style=""> </span><span style="">(</span><span style="color:#a6e22e">t</span><span style=""> </span><span style="color:#f92672">*</span><span style="color:#a6e22e">Trie</span><span style="">)</span><span style=""> </span><span style="color:#a6e22e">SplitPath</span><span style="">(</span><span style="color:#a6e22e">path</span><span style=""> </span><span style="color:#66d9ef">string</span><span style="">)</span><span style=""> </span><span style="">(</span><span style="color:#66d9ef">string</span><span style="">,</span><span style=""> </span><span style="color:#66d9ef">string</span><span style="">)</span><span style=""> </span><span style="">{</span><span style="">
 </span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="">	</span><span style="color:#66d9ef">var</span><span style=""> </span><span style="color:#a6e22e">key</span><span style=""> </span><span style="color:#66d9ef">string</span><span style="">
@@ -509,15 +516,15 @@ is this:</p>
 </span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">24</span><span style=""></span><span style="">}</span></code></pre>
 </div>
 
-<p>The routers now is faster and static routes are 0% fat 🚀.</p>
+<p>The router now is faster and static routes are 0% fat 🚀.</p>
 
-<p>There still work in progress - who would think that behind a simple router
-there is too much logic evolved.</p>
+<p>There is still work in progress - who would think that behind a simple router
+there is too much logic involved. The experience so far has been very pleasant,
+learning and improving every day more about <a href="https://golang.org/">Go</a> and its
+niceties.</p>
 
-<p>The experience so far has being very pleasant, learning and improving every day
-more about go and its niceties.</p>
-
-<p>Any tips, comments or a review will be more than welcome 🙏</p>
+<p>To make an even better improvement, any tips, comments or a review will be more
+than welcome 🙏</p>
 
                 </section>
             </article>
