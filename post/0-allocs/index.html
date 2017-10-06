@@ -108,6 +108,10 @@ router.HandleFunc(&quot;/static/:uuid/:ipv4&quot;, handleUUID, &quot;PUT&quot;)
 router.HandleFunc(&quot;/static/:ipv4/:uuid&quot;, handleIPV$, &quot;GET,HEAD&quot;)
 </code></pre>
 
+<blockquote>
+<p>As if that were not enough, also with <a href="/post/versioning/">versioning</a> support</p>
+</blockquote>
+
 <p>While implementing this, the use of regular expressions was inevitable, but by
 using them where they were not required, they came with a big penalty.</p>
 
