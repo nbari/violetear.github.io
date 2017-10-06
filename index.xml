@@ -120,8 +120,8 @@ func myPanicHandler() http.HandlerFunc { return http.HandlerFunc(func(w http.Res
       
       <guid>https://violetear.org/post/0-allocs/</guid>
       <description>Go is fast, but when doing things carefully, besides being faster is very light.
-The history about violetear is not much different from many others - an HTTP router capable of handling any requests.
-One of the main constraints found at the beginning was how to deal with static and dynamic URL&amp;rsquo;s. Let&amp;rsquo;s face it, if you want to replace an important component of your current architecture you should try to break as less as possible - highly trained monkeys hate changes.</description>
+violetear&amp;rsquo;s history is not very different from many others. It is an HTTP router capable of handling any requests.
+One of violetear&amp;rsquo;s main constraints is how to deal with static and dynamic URL&amp;rsquo;s. Let&amp;rsquo;s face it, if you want to replace an important component of your current architecture you should try to break as less as possible - highly trained monkeys hate changes.</description>
     </item>
     
     <item>
