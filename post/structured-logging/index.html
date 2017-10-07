@@ -8,7 +8,7 @@
 		<meta name="description" content="Go HTTP router">
 		<meta name="keywords" content="router, http, http2, dynamic, rest, versioning, api, 0 allocs">
 		<meta name="generator" content="Hugo 0.29" />
-		<title>Middleware &middot; violetear</title>
+		<title>Structured Logging &middot; violetear</title>
         <link rel="apple-touch-icon" sizes="57x57" href="https://violetear.org/images/apple-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="https://violetear.org/images/apple-icon-60x60.png">
         <link rel="apple-touch-icon" sizes="72x72" href="https://violetear.org/images/apple-icon-72x72.png">
@@ -57,116 +57,99 @@
         <section id="wrapper">
             <article class="post">
                 <header>
-                    <h1>Middleware</h1>
+                    <h1>Structured Logging</h1>
                     <h2 class="headline">
                     <br>
+                    
+                    
+                        
+                            <a href="https://violetear.org/tags/logging">logging</a>
+                        
+                            <a href="https://violetear.org/tags/json">json</a>
+                        
+                    
                     
                     </h2>
                 </header>
                 <section id="post-body">
-                    <p>Violetear uses <a href="http://justinas.org/alice-painless-middleware-chaining-for-go/">Alice</a> to handle middleware.</p>
+                    <p>By using a custom logger all the request could be written in a structured format
+that can be easily parsed.</p>
 
-<p>Example:</p>
+<p>Example using JSON format:</p>
 
 <pre><code class="language-go">package main
 
 import (
-	&quot;context&quot;
-	&quot;log&quot;
-	&quot;net/http&quot;
+    &quot;encoding/json&quot;
+    &quot;log&quot;
+    &quot;net/http&quot;
+    &quot;os&quot;
+    &quot;time&quot;
 
-	&quot;github.com/nbari/violetear&quot;
-	&quot;github.com/nbari/violetear/middleware&quot;
+    &quot;github.com/nbari/violetear&quot;
 )
 
-func commonHeaders(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set(&quot;X-app-Version&quot;, &quot;1.0&quot;)
-		next.ServeHTTP(w, r)
-	})
+func helloWorld(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte(&quot;hello world!&quot;))
 }
 
-func middlewareOne(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(&quot;Executing middlewareOne&quot;)
-		ctx := context.WithValue(r.Context(), &quot;m1&quot;, &quot;m1&quot;)
-		ctx = context.WithValue(ctx, &quot;key&quot;, 1)
-		next.ServeHTTP(w, r.WithContext(ctx))
-		log.Println(&quot;Executing middlewareOne again&quot;)
-	})
-}
-
-func middlewareTwo(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(&quot;Executing middlewareTwo&quot;)
-		if r.URL.Path != &quot;/&quot; {
-			return
-		}
-		ctx := context.WithValue(r.Context(), &quot;m2&quot;, &quot;m2&quot;)
-		next.ServeHTTP(w, r.WithContext(ctx))
-		log.Println(&quot;Executing middlewareTwo again&quot;)
-	})
-}
-
-func catchAll(w http.ResponseWriter, r *http.Request) {
-	log.Printf(&quot;Executing finalHandler\nm1:%s\nkey:%d\nm2:%s\n&quot;,
-		r.Context().Value(&quot;m1&quot;),
-		r.Context().Value(&quot;key&quot;),
-		r.Context().Value(&quot;m2&quot;),
-	)
-	w.Write([]byte(&quot;I catch all&quot;))
-}
-
-func foo(w http.ResponseWriter, r *http.Request) {
-	panic(&quot;this will never happen, because of the return&quot;)
+func myLogger(w *violetear.ResponseWriter, r *http.Request) {
+    j := map[string]interface{}{
+        &quot;Time&quot;:        time.Now().UTC().Format(time.RFC3339),
+        &quot;RemoteAddr&quot;:  r.RemoteAddr,
+        &quot;URL&quot;:         r.URL.String(),
+        &quot;Status&quot;:      w.Status(),
+        &quot;Size&quot;:        w.Size(),
+        &quot;RequestTime&quot;: w.RequestTime(),
+        &quot;RequestID&quot;:   w.RequestID(),
+    }
+    if err := json.NewEncoder(os.Stdout).Encode(j); err != nil {
+        log.Println(err)
+    }
 }
 
 func main() {
-	router := violetear.New()
-
-	stdChain := middleware.New(commonHeaders, middlewareOne, middlewareTwo)
-
-	router.Handle(&quot;/&quot;, stdChain.ThenFunc(catchAll), &quot;GET,HEAD&quot;)
-	router.Handle(&quot;/foo&quot;, stdChain.ThenFunc(foo), &quot;GET,HEAD&quot;)
-	router.HandleFunc(&quot;/bar&quot;, foo)
-
-	log.Fatal(http.ListenAndServe(&quot;:8080&quot;, router))
+    router := violetear.New()
+    router.LogRequests = true
+    router.Logger = myLogger
+    router.Verbose = false
+    router.HandleFunc(&quot;*&quot;, helloWorld)
+    log.Fatal(http.ListenAndServe(&quot;:8080&quot;, router))
 }
 </code></pre>
 
-<blockquote>
-<p>Notice the use or router.Handle and router.HandleFunc when using middleware
-you normally would use route.Handle</p>
-</blockquote>
+<p>Notice the:</p>
 
-<p>Request output example:</p>
-
-<pre><code class="language-sh">$ http http://localhost:8080/
-HTTP/1.1 200 OK
-Content-Length: 11
-Content-Type: text/plain; charset=utf-8
-Date: Thu, 22 Oct 2015 16:08:18 GMT
-Request-Id: GET-1445530098002701428-3
-X-App-Version: 1.0
-
-I catch all
+<pre><code>router.Logger = myLogger
 </code></pre>
 
-<p>On the server you will see something like this:</p>
+<p>In this example all requests are going to print out to <code>stdout</code> similar to this:</p>
 
-<pre><code class="language-sh">$ go run test.go
-2016/08/17 18:08:42 Adding path: / [GET,HEAD]
-2016/08/17 18:08:42 Adding path: /foo [GET,HEAD]
-2016/08/17 18:08:42 Adding path: /bar [ALL]
-2016/08/17 18:08:47 Executing middlewareOne
-2016/08/17 18:08:47 Executing middlewareTwo
-2016/08/17 18:08:47 Executing finalHandler
-m1:m1
-key:1
-m2:m2
-2016/08/17 18:08:47 Executing middlewareTwo again
-2016/08/17 18:08:47 Executing middlewareOne again
+<pre><code class="language-json">{
+    &quot;RemoteAddr&quot;: &quot;127.0.0.1:51940&quot;,
+    &quot;RequestID&quot;: &quot;&quot;,
+    &quot;RequestTime&quot;: &quot;15.876µs&quot;,
+    &quot;Size&quot;: 12,
+    &quot;Status&quot;: 200,
+    &quot;Time&quot;: &quot;2017-10-07T08:36:05Z&quot;,
+    &quot;URL&quot;: &quot;/&quot;
+}
 </code></pre>
+
+<p>The <code>myLogger</code> function:</p>
+
+<pre><code>func myLogger(w *violetear.ResponseWriter, r *http.Request) {}
+</code></pre>
+
+<p>Is using <a href="https://github.com/nbari/violetear/blob/master/responsewriter.go">violetear&rsquo;s Responsewriter</a>,
+which contains the following methods:</p>
+
+<ul>
+<li>Status() the returned HTTP status code</li>
+<li>Size() bytes written</li>
+<li>RequestTime() the time it took the router to dispatch the request</li>
+<li>RequestID() the incoming request-id in case defined</li>
+</ul>
 
                 </section>
             </article>
@@ -174,12 +157,12 @@ m2:m2
 
             <footer id="post-meta" class="clearfix">
 
-    <a href="https://github.com/nbari/violetear-docs/edit/master/post/middleware.md" target="_blank">Suggest edit ✍️</a>
+    <a href="https://github.com/nbari/violetear-docs/edit/master/post/structured-logging.md" target="_blank">Suggest edit ✍️</a>
 
                 
                     
                 <section id="sharing">
-                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fvioletear.org%2fpost%2fmiddleware%2f - Middleware "><span class="icon-twitter"> Tweet</span></a>
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fvioletear.org%2fpost%2fstructured-logging%2f - Structured%20Logging "><span class="icon-twitter"> Tweet</span></a>
 
 <a class="facebook" href="#" onclick="
     window.open(

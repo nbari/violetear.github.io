@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Logging on violetear</title>
+    <link>https://violetear.org/tags/logging/</link>
+    <description>Recent content in Logging on violetear</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright> </copyright>
+    <lastBuildDate>Sat, 11 Mar 2017 11:03:40 +0130</lastBuildDate>
+    
+	<atom:link href="https://violetear.org/tags/logging/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Structured Logging</title>
+      <link>https://violetear.org/post/structured-logging/</link>
+      <pubDate>Sat, 11 Mar 2017 11:03:40 +0130</pubDate>
+      
+      <guid>https://violetear.org/post/structured-logging/</guid>
+      <description>By using a custom logger all the request could be written in a structured format that can be easily parsed.
+Example using JSON format:
+package main import ( &amp;quot;encoding/json&amp;quot; &amp;quot;log&amp;quot; &amp;quot;net/http&amp;quot; &amp;quot;os&amp;quot; &amp;quot;time&amp;quot; &amp;quot;github.com/nbari/violetear&amp;quot; ) func helloWorld(w http.ResponseWriter, r *http.Request) { w.Write([]byte(&amp;quot;hello world!&amp;quot;)) } func myLogger(w *violetear.ResponseWriter, r *http.Request) { j := map[string]interface{}{ &amp;quot;Time&amp;quot;: time.Now().UTC().Format(time.RFC3339), &amp;quot;RemoteAddr&amp;quot;: r.RemoteAddr, &amp;quot;URL&amp;quot;: r.URL.String(), &amp;quot;Status&amp;quot;: w.Status(), &amp;quot;Size&amp;quot;: w.Size(), &amp;quot;RequestTime&amp;quot;: w.RequestTime(), &amp;quot;RequestID&amp;quot;: w.RequestID(), } if err := json.</description>
+    </item>
+    
+  </channel>
+</rss>
