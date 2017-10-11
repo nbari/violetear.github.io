@@ -417,6 +417,28 @@ static routes, from 11 to 1:</p>
 </span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span><span style="">ok      github.com/nbari/violetear      3.507s</span></code></pre>
 </div>
 
+<p>go-torch 🔥</p>
+
+<p>To have a better graphical representation about the profiling output
+<a href="https://github.com/uber/go-torch">go-torch</a> is an excellent tool for creating
+flame graphs.</p>
+
+<p>The easiest way to run it is like this:</p>
+
+<pre><code class="language-sh">$ docker run uber/go-torch -u http://[address-of-host] -p &gt; torch.svg
+</code></pre>
+
+<blockquote>
+<p>user the IP/address of your host, not localhost or 127.0.0.1</p>
+</blockquote>
+
+<p>This is an example of how it was behaving the router before:</p>
+
+<p><img src="/img/torch-before.svg" alt="torch before" /></p>
+
+<p>After:
+<img src="/img/torch-after.svg" alt="torch after" /></p>
+
 <h1 id="0-allocations">0 allocations</h1>
 
 <p>Make it happen 😃</p>
