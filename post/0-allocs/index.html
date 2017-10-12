@@ -132,7 +132,7 @@ using them where they were not required, they came with a big penalty.</p>
 </span><span style=""></span><span style="">}</span></code></pre>
 </div>
 
-<h1 id="pprof">pprof</h1>
+<h3 id="pprof-a-name-pprof-a-hahahugoshortcode-2hbhb">pprof <a name="pprof"></a> <a href="#pprof">¶</a></h3>
 
 <p>Go comes with &ldquo;batteries included&rdquo; and is very easy to start profiling the code by the
 use of the package <a href="https://golang.org/pkg/net/http/pprof/">pprof</a>.</p>
@@ -179,6 +179,8 @@ r.HandleFunc(&quot;/debug/pprof/profile&quot;, pprof.Profile)
 r.HandleFunc(&quot;/debug/pprof/symbol&quot;, pprof.Symbol)
 r.HandleFunc(&quot;/debug/pprof/trace&quot;, pprof.Trace)
 </code></pre>
+
+<h3 id="wrk-a-name-wrk-a-hahahugoshortcode-3hbhb">wrk <a name="wrk"></a> <a href="#wrk">¶</a></h3>
 
 <p>For making some random requests, <code>wrk</code> + <code>lua</code> do a nice combo, this is the
 command I used for testing:</p>
@@ -417,7 +419,7 @@ static routes, from 11 to 1:</p>
 </span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span><span style="">ok      github.com/nbari/violetear      3.507s</span></code></pre>
 </div>
 
-<p>go-torch 🔥</p>
+<h3 id="go-torch-a-name-go-torch-a-hahahugoshortcode-9hbhb">go-torch 🔥 <a name="go-torch"></a> <a href="#go-torch">¶</a></h3>
 
 <p>To have a better graphical representation about the profiling output
 <a href="https://github.com/uber/go-torch">go-torch</a> is an excellent tool for creating
