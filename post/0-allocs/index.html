@@ -7,7 +7,7 @@
 		<meta name="author" content="violetear">
 		<meta name="description" content="Go HTTP router">
 		<meta name="keywords" content="router, http, http2, dynamic, rest, versioning, api, 0 allocs, 499">
-		<meta name="generator" content="Hugo 0.29" />
+		<meta name="generator" content="Hugo 0.30.2" />
 		<title>The journey to achieve 0 allocations &middot; violetear</title>
         <link rel="apple-touch-icon" sizes="57x57" href="https://violetear.org/images/apple-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="https://violetear.org/images/apple-icon-60x60.png">
@@ -117,20 +117,19 @@ using them where they were not required, they came with a big penalty.</p>
 
 <p>This is how the router was splitting the path for all requests:</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span><span style=""> </span><span style="color:#a6e22e">splitPathRx</span><span style=""> </span><span style="">=</span><span style=""> </span><span style="color:#a6e22e">regexp</span><span style="">.</span><span style="color:#a6e22e">MustCompile</span><span style="">(</span><span style="color:#e6db74">`[^/ ]+`</span><span style="">)</span><span style="">
-</span><span style="">
-</span><span style=""></span><span style="color:#75715e">// splitPath returns an slice of the path
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span><span style=""> </span><span style="">(</span><span style="color:#a6e22e">r</span><span style=""> </span><span style="color:#f92672">*</span><span style="color:#a6e22e">Router</span><span style="">)</span><span style=""> </span><span style="color:#a6e22e">splitPath</span><span style="">(</span><span style="color:#a6e22e">p</span><span style=""> </span><span style="color:#66d9ef">string</span><span style="">)</span><span style=""> </span><span style="">[]</span><span style="color:#66d9ef">string</span><span style=""> </span><span style="">{</span><span style="">
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="">	</span><span style="color:#a6e22e">pathParts</span><span style=""> </span><span style="color:#f92672">:=</span><span style=""> </span><span style="color:#a6e22e">splitPathRx</span><span style="">.</span><span style="color:#a6e22e">FindAllString</span><span style="">(</span><span style="color:#a6e22e">p</span><span style="">,</span><span style=""> </span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="">)</span><span style="">
-</span></span><span style="">
-</span><span style="">	</span><span style="color:#75715e">// root (empty slice)
-</span><span style="color:#75715e"></span><span style="">	</span><span style="color:#66d9ef">if</span><span style=""> </span><span style="">len</span><span style="">(</span><span style="color:#a6e22e">pathParts</span><span style="">)</span><span style=""> </span><span style="color:#f92672">==</span><span style=""> </span><span style="color:#ae81ff">0</span><span style=""> </span><span style="">{</span><span style="">
-</span><span style="">		</span><span style="color:#a6e22e">pathParts</span><span style=""> </span><span style="">=</span><span style=""> </span><span style="">append</span><span style="">(</span><span style="color:#a6e22e">pathParts</span><span style="">,</span><span style=""> </span><span style="color:#e6db74">&#34;/&#34;</span><span style="">)</span><span style="">
-</span><span style="">	</span><span style="">}</span><span style="">
-</span><span style="">
-</span><span style="">	</span><span style="color:#66d9ef">return</span><span style=""> </span><span style="color:#a6e22e">pathParts</span><span style="">
-</span><span style=""></span><span style="">}</span></code></pre>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">splitPathRx</span> = <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`[^/ ]+`</span>)
+
+<span style="color:#75715e">// splitPath returns an slice of the path
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Router</span>) <span style="color:#a6e22e">splitPath</span>(<span style="color:#a6e22e">p</span> <span style="color:#66d9ef">string</span>) []<span style="color:#66d9ef">string</span> {
+<span style="background-color:#3c3d38;display:block;width:100%">	<span style="color:#a6e22e">pathParts</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">splitPathRx</span>.<span style="color:#a6e22e">FindAllString</span>(<span style="color:#a6e22e">p</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+</span>
+	<span style="color:#75715e">// root (empty slice)
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">pathParts</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">pathParts</span> = append(<span style="color:#a6e22e">pathParts</span>, <span style="color:#e6db74">&#34;/&#34;</span>)
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">pathParts</span>
+}</code></pre></div>
 
 <h3 id="pprof-a-name-pprof-a-hahahugoshortcode-2hbhb">pprof <a name="pprof"></a> <a href="#pprof">¶</a></h3>
 
@@ -233,21 +232,20 @@ command is used:</p>
 <p>After running the command you enter into an interactive mode. There I typed
 <code>top</code> and got this output:</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="">(pprof) top
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="">Showing nodes accounting for 4694.50kB, 100% of 4694.50kB total
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span><span style="">Showing top 10 nodes out of 25
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span><span style="">      flat  flat%   sum%        cum   cum%
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span><span style=""> 3155.84kB 67.22% 67.22%  3155.84kB 67.22%  regexp.(*bitState).reset /usr/local/Cellar/go/1.9/libexec/src/regexp/backtrack.go
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span><span style="">     514kB 10.95% 78.17%      514kB 10.95%  bufio.NewWriterSize /usr/local/Cellar/go/1.9/libexec/src/bufio/bufio.go
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span><span style="">  512.62kB 10.92% 89.09%   512.62kB 10.92%  regexp.(*Regexp).FindAllString.func1 /usr/local/Cellar/go/1.9/libexec/src/regexp/regexp.go
-</span></span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span><span style="">  512.03kB 10.91%   100%   512.03kB 10.91%  syscall.anyToSockaddr /usr/local/Cellar/go/1.9/libexec/src/syscall/syscall_bsd.go
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span><span style="">         0     0%   100%  3668.46kB 78.14%  github.com/nbari/violetear.(*Router).ServeHTTP /Users/nbari/projects/go/src/github.com/nbari/violetear/violetear.go
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span><span style="">         0     0%   100%  3668.46kB 78.14%  github.com/nbari/violetear.(*Router).splitPath /Users/nbari/projects/go/src/github.com/nbari/violetear/violetear.go
-</span></span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span><span style="">         0     0%   100%   512.03kB 10.91%  internal/poll.(*FD).Accept /usr/local/Cellar/go/1.9/libexec/src/internal/poll/fd_unix.go
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span><span style="">         0     0%   100%   512.03kB 10.91%  internal/poll.accept /usr/local/Cellar/go/1.9/libexec/src/internal/poll/sys_cloexec.go
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span><span style="">         0     0%   100%   512.03kB 10.91%  main.main /Users/nbari/projects/go/src/github.com/nbari/go-sandbox/profile-violetear/profile/main.go
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span><span style="">         0     0%   100%   512.03kB 10.91%  net.(*TCPListener).AcceptTCP /usr/local/Cellar/go/1.9/libexec/src/net/tcpsock.go</span></code></pre>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span>(pprof) top
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>Showing nodes accounting for 4694.50kB, 100% of 4694.50kB total
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>Showing top 10 nodes out of 25
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>      flat  flat%   sum%        cum   cum%
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span> 3155.84kB 67.22% 67.22%  3155.84kB 67.22%  regexp.(*bitState).reset /usr/local/Cellar/go/1.9/libexec/src/regexp/backtrack.go
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>     514kB 10.95% 78.17%      514kB 10.95%  bufio.NewWriterSize /usr/local/Cellar/go/1.9/libexec/src/bufio/bufio.go
+<span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>  512.62kB 10.92% 89.09%   512.62kB 10.92%  regexp.(*Regexp).FindAllString.func1 /usr/local/Cellar/go/1.9/libexec/src/regexp/regexp.go
+</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>  512.03kB 10.91%   100%   512.03kB 10.91%  syscall.anyToSockaddr /usr/local/Cellar/go/1.9/libexec/src/syscall/syscall_bsd.go
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>         0     0%   100%  3668.46kB 78.14%  github.com/nbari/violetear.(*Router).ServeHTTP /Users/nbari/projects/go/src/github.com/nbari/violetear/violetear.go
+<span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>         0     0%   100%  3668.46kB 78.14%  github.com/nbari/violetear.(*Router).splitPath /Users/nbari/projects/go/src/github.com/nbari/violetear/violetear.go
+</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>         0     0%   100%   512.03kB 10.91%  internal/poll.(*FD).Accept /usr/local/Cellar/go/1.9/libexec/src/internal/poll/fd_unix.go
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>         0     0%   100%   512.03kB 10.91%  internal/poll.accept /usr/local/Cellar/go/1.9/libexec/src/internal/poll/sys_cloexec.go
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>         0     0%   100%   512.03kB 10.91%  main.main /Users/nbari/projects/go/src/github.com/nbari/go-sandbox/profile-violetear/profile/main.go
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>         0     0%   100%   512.03kB 10.91%  net.(*TCPListener).AcceptTCP /usr/local/Cellar/go/1.9/libexec/src/net/tcpsock.go</code></pre></div>
 
 <blockquote>
 <p>Notice lines 7 and 10</p>
@@ -256,23 +254,22 @@ command is used:</p>
 <p>Still in the interactive mode, I typed: <code>list splitPath</code> which helps to show the
 lines of code. This was the output:</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="">(pprof) list splitPath
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="">Total: 2.02MB
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span><span style="">ROUTINE ======================== github.com/nbari/violetear.(*Router).splitPath in /Users/nbari/projects/go/src/github.com/nbari/violetear/violetear.go
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span><span style="">         0     1.02MB (flat, cum) 50.37% of Total
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span><span style="">         .          .    261:   return
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span><span style="">         .          .    262:}
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span><span style="">         .          .    263:
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span><span style="">         .          .    264:// splitPath returns an slice of the path
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span><span style="">         .          .    265:func (r *Router) splitPath(p string) []string {
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span><span style="">         .     1.02MB    266:   pathParts := splitPathRx.FindAllString(p, -1)
-</span></span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span><span style="">         .          .    267:
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span><span style="">         .          .    268:   // root (empty slice)
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span><span style="">         .          .    269:   if len(pathParts) == 0 {
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span><span style="">         .          .    270:           pathParts = append(pathParts, &#34;/&#34;)
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span><span style="">         .          .    271:   }
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span><span style="">(pprof)</span></code></pre>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span>(pprof) list splitPath
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>Total: 2.02MB
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>ROUTINE ======================== github.com/nbari/violetear.(*Router).splitPath in /Users/nbari/projects/go/src/github.com/nbari/violetear/violetear.go
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>         0     1.02MB (flat, cum) 50.37% of Total
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>         .          .    261:   return
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>         .          .    262:}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>         .          .    263:
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>         .          .    264:// splitPath returns an slice of the path
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>         .          .    265:func (r *Router) splitPath(p string) []string {
+<span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>         .     1.02MB    266:   pathParts := splitPathRx.FindAllString(p, -1)
+</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>         .          .    267:
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>         .          .    268:   // root (empty slice)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>         .          .    269:   if len(pathParts) == 0 {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>         .          .    270:           pathParts = append(pathParts, &#34;/&#34;)
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>         .          .    271:   }
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span>(pprof)</code></pre></div>
 
 <p>This showed that splitting the path using a regular expression was inefficient.
 I changed the function to something like this:</p>
@@ -335,44 +332,42 @@ func BenchmarkRouterDynamic(b *testing.B) {
 
 <p>The output was a small win of 3 allocation less 🎉</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="">$ go test -run=^$ -bench=.
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="">2017/10/02 18:47:23 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span><span style="">goos: darwin
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span><span style="">goarch: amd64
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span><span style="">pkg: github.com/nbari/violetear
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span><span style="">BenchmarkRouterStatic-4         2017/10/02 18:47:23 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span><span style="">2017/10/02 18:47:23 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span><span style="">2017/10/02 18:47:23 Adding path: /hello [GET,HEAD]
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span><span style=""> 2000000               692 ns/op             616 B/op         10 allocs/op
-</span></span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span><span style="">2017/10/02 18:47:25 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span><span style="">BenchmarkRouterDynamic-4        2017/10/02 18:47:25 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span><span style="">2017/10/02 18:47:25 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span><span style="">2017/10/02 18:47:25 Adding path: /test/:word [GET,HEAD]
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span><span style=""> 1000000              1256 ns/op             936 B/op         12 allocs/op
-</span></span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span><span style="">PASS
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span><span style="">ok      github.com/nbari/violetear      3.380s</span></code></pre>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span>$ go test -run=^$ -bench=.
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>2017/10/02 18:47:23 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>goos: darwin
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>goarch: amd64
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>pkg: github.com/nbari/violetear
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>BenchmarkRouterStatic-4         2017/10/02 18:47:23 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>2017/10/02 18:47:23 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>2017/10/02 18:47:23 Adding path: /hello [GET,HEAD]
+<span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span> 2000000               692 ns/op             616 B/op         10 allocs/op
+</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>2017/10/02 18:47:25 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>BenchmarkRouterDynamic-4        2017/10/02 18:47:25 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>2017/10/02 18:47:25 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>2017/10/02 18:47:25 Adding path: /test/:word [GET,HEAD]
+<span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span> 1000000              1256 ns/op             936 B/op         12 allocs/op
+</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>PASS
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span>ok      github.com/nbari/violetear      3.380s</code></pre></div>
 
 <p>Before doing the changes this was the output: 11 allocations for static routes
 and 14 for dynamic 🐢</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="">$ go test -run=^$ -bench=.
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="">2017/10/02 09:56:34 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span><span style="">goos: darwin
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span><span style="">goarch: amd64
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span><span style="">pkg: github.com/nbari/violetear
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span><span style="">BenchmarkRouterStatic-4         2017/10/02 09:56:34 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span><span style="">2017/10/02 09:56:34 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span><span style="">2017/10/02 09:56:34 Adding path: /hello [GET,HEAD]
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span><span style="">1000000              1145 ns/op             776 B/op         11 allocs/op
-</span></span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span><span style="">2017/10/02 09:56:35 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span><span style="">BenchmarkRouterDynamic-4        2017/10/02 09:56:35 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span><span style="">2017/10/02 09:56:35 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span><span style="">2017/10/02 09:56:35 Adding path: /test/:word [GET,HEAD]
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span><span style="">1000000              1835 ns/op            1096 B/op         14 allocs/op
-</span></span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span><span style="">PASS
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span><span style="">ok      github.com/nbari/violetear      3.029s</span></code></pre>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span>$ go test -run=^$ -bench=.
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>2017/10/02 09:56:34 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>goos: darwin
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>goarch: amd64
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>pkg: github.com/nbari/violetear
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>BenchmarkRouterStatic-4         2017/10/02 09:56:34 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>2017/10/02 09:56:34 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>2017/10/02 09:56:34 Adding path: /hello [GET,HEAD]
+<span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>1000000              1145 ns/op             776 B/op         11 allocs/op
+</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>2017/10/02 09:56:35 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>BenchmarkRouterDynamic-4        2017/10/02 09:56:35 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>2017/10/02 09:56:35 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>2017/10/02 09:56:35 Adding path: /test/:word [GET,HEAD]
+<span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>1000000              1835 ns/op            1096 B/op         14 allocs/op
+</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>PASS
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span>ok      github.com/nbari/violetear      3.029s</code></pre></div>
 
 <p>To get more info about the allocations, I mainly used
 <code>pprof</code> with options like <code>alloc_space</code>:</p>
@@ -400,24 +395,23 @@ profiled and a stack trace printed on each object's allocation and free.
 <p>After doing all this I was available to save up to 90% of the allocations for
 static routes, from 11 to 1:</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="">$ go test -run=^$ -bench=.
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="">2017/10/02 09:51:47 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span><span style="">goos: darwin
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span><span style="">goarch: amd64
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span><span style="">pkg: github.com/nbari/violetear
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span><span style="">BenchmarkRouterStatic-4         2017/10/02 09:51:47 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span><span style="">2017/10/02 09:51:47 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span><span style="">2017/10/02 09:51:47 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span><span style="">2017/10/02 09:51:47 Adding path: /hello [GET,HEAD]
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span><span style="">10000000               213 ns/op              16 B/op          1 allocs/op
-</span></span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span><span style="">2017/10/02 09:51:50 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span><span style="">BenchmarkRouterDynamic-4        2017/10/02 09:51:50 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span><span style="">2017/10/02 09:51:50 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span><span style="">2017/10/02 09:51:50 Adding path: /test/:word [GET,HEAD]
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span><span style="">1000000              1115 ns/op             816 B/op          7 allocs/op
-</span></span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span><span style="">PASS
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span><span style="">ok      github.com/nbari/violetear      3.507s</span></code></pre>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span>$ go test -run=^$ -bench=.
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>2017/10/02 09:51:47 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>goos: darwin
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>goarch: amd64
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>pkg: github.com/nbari/violetear
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>BenchmarkRouterStatic-4         2017/10/02 09:51:47 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>2017/10/02 09:51:47 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>2017/10/02 09:51:47 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>2017/10/02 09:51:47 Adding path: /hello [GET,HEAD]
+<span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>10000000               213 ns/op              16 B/op          1 allocs/op
+</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>2017/10/02 09:51:50 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>BenchmarkRouterDynamic-4        2017/10/02 09:51:50 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>2017/10/02 09:51:50 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>2017/10/02 09:51:50 Adding path: /test/:word [GET,HEAD]
+<span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>1000000              1115 ns/op             816 B/op          7 allocs/op
+</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span>PASS
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span>ok      github.com/nbari/violetear      3.507s</code></pre></div>
 
 <h3 id="go-torch-a-name-go-torch-a-hahahugoshortcode-9hbhb">go-torch 🔥 <a name="go-torch"></a> <a href="#go-torch">¶</a></h3>
 
@@ -445,25 +439,24 @@ flame graphs.</p>
 
 <p>Make it happen 😃</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="">$ go test -run=^$ -bench=.
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="">2017/10/05 21:57:31 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span><span style="">goos: darwin
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span><span style="">goarch: amd64
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span><span style="">pkg: github.com/nbari/violetear
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span><span style="">BenchmarkRouterStatic-4         2017/10/05 21:57:31 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span><span style="">2017/10/05 21:57:31 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span><span style="">2017/10/05 21:57:31 Adding path: /hello [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span><span style="">2017/10/05 21:57:32 Adding path: /hello [GET,HEAD]
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span><span style="">10000000               122 ns/op               0 B/op          0 allocs/op
-</span></span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span><span style="">2017/10/05 21:57:33 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span><span style="">BenchmarkRouterDynamic-4        2017/10/05 21:57:33 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span><span style="">2017/10/05 21:57:33 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span><span style="">2017/10/05 21:57:33 Adding path: /test/:word [GET,HEAD]
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span><span style="">2017/10/05 21:57:34 Adding path: /test/:word [GET,HEAD]
-</span><span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span><span style=""> 2000000               913 ns/op             784 B/op          6 allocs/op
-</span></span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span><span style="">PASS
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">18</span><span style="">ok      github.com/nbari/violetear      4.144s</span></code></pre>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span>$ go test -run=^$ -bench=.
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>2017/10/05 21:57:31 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>goos: darwin
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>goarch: amd64
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>pkg: github.com/nbari/violetear
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>BenchmarkRouterStatic-4         2017/10/05 21:57:31 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>2017/10/05 21:57:31 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>2017/10/05 21:57:31 Adding path: /hello [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>2017/10/05 21:57:32 Adding path: /hello [GET,HEAD]
+<span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>10000000               122 ns/op               0 B/op          0 allocs/op
+</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>2017/10/05 21:57:33 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>BenchmarkRouterDynamic-4        2017/10/05 21:57:33 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>2017/10/05 21:57:33 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>2017/10/05 21:57:33 Adding path: /test/:word [GET,HEAD]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>2017/10/05 21:57:34 Adding path: /test/:word [GET,HEAD]
+<span style="background-color:#3c3d38;display:block;width:100%"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span> 2000000               913 ns/op             784 B/op          6 allocs/op
+</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span>PASS
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">18</span>ok      github.com/nbari/violetear      4.144s</code></pre></div>
 
 <p>The router since always has been behaving quite well, this mainly thanks to Go
 itself and well, to the modest traffic it has been handling.</p>
@@ -518,31 +511,30 @@ to parse the path without creating allocations.</p>
 the existing path and return chunks of the slice did the trick, the current code
 look like is this:</p>
 
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="color:#66d9ef">func</span><span style=""> </span><span style="">(</span><span style="color:#a6e22e">t</span><span style=""> </span><span style="color:#f92672">*</span><span style="color:#a6e22e">Trie</span><span style="">)</span><span style=""> </span><span style="color:#a6e22e">SplitPath</span><span style="">(</span><span style="color:#a6e22e">path</span><span style=""> </span><span style="color:#66d9ef">string</span><span style="">)</span><span style=""> </span><span style="">(</span><span style="color:#66d9ef">string</span><span style="">,</span><span style=""> </span><span style="color:#66d9ef">string</span><span style="">)</span><span style=""> </span><span style="">{</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span><span style="">	</span><span style="color:#66d9ef">var</span><span style=""> </span><span style="color:#a6e22e">key</span><span style=""> </span><span style="color:#66d9ef">string</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span><span style="">	</span><span style="color:#66d9ef">if</span><span style=""> </span><span style="color:#a6e22e">path</span><span style=""> </span><span style="color:#f92672">==</span><span style=""> </span><span style="color:#e6db74">&#34;&#34;</span><span style=""> </span><span style="">{</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span><span style="">		</span><span style="color:#66d9ef">return</span><span style=""> </span><span style="color:#a6e22e">key</span><span style="">,</span><span style=""> </span><span style="color:#a6e22e">path</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span><span style="">	</span><span style="">}</span><span style=""> </span><span style="color:#66d9ef">else</span><span style=""> </span><span style="color:#66d9ef">if</span><span style=""> </span><span style="color:#a6e22e">path</span><span style=""> </span><span style="color:#f92672">==</span><span style=""> </span><span style="color:#e6db74">&#34;/&#34;</span><span style=""> </span><span style="">{</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span><span style="">		</span><span style="color:#66d9ef">return</span><span style=""> </span><span style="color:#a6e22e">path</span><span style="">,</span><span style=""> </span><span style="color:#e6db74">&#34;&#34;</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span><span style="">	</span><span style="">}</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span><span style="">	</span><span style="color:#66d9ef">for</span><span style=""> </span><span style="color:#a6e22e">i</span><span style=""> </span><span style="color:#f92672">:=</span><span style=""> </span><span style="color:#ae81ff">0</span><span style="">;</span><span style=""> </span><span style="color:#a6e22e">i</span><span style=""> </span><span style="">&lt;</span><span style=""> </span><span style="">len</span><span style="">(</span><span style="color:#a6e22e">path</span><span style="">);</span><span style=""> </span><span style="color:#a6e22e">i</span><span style="color:#f92672">++</span><span style=""> </span><span style="">{</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span><span style="">		</span><span style="color:#66d9ef">if</span><span style=""> </span><span style="color:#a6e22e">path</span><span style="">[</span><span style="color:#a6e22e">i</span><span style="">]</span><span style=""> </span><span style="color:#f92672">==</span><span style=""> </span><span style="color:#e6db74">&#39;/&#39;</span><span style=""> </span><span style="">{</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span><span style="">			</span><span style="color:#66d9ef">if</span><span style=""> </span><span style="color:#a6e22e">i</span><span style=""> </span><span style="color:#f92672">==</span><span style=""> </span><span style="color:#ae81ff">0</span><span style=""> </span><span style="">{</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span><span style="">				</span><span style="color:#66d9ef">return</span><span style=""> </span><span style="color:#a6e22e">t</span><span style="">.</span><span style="color:#a6e22e">SplitPath</span><span style="">(</span><span style="color:#a6e22e">path</span><span style="">[</span><span style="color:#ae81ff">1</span><span style="">:])</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span><span style="">			</span><span style="">}</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span><span style="">			</span><span style="color:#66d9ef">if</span><span style=""> </span><span style="color:#a6e22e">i</span><span style=""> </span><span style="">&gt;</span><span style=""> </span><span style="color:#ae81ff">0</span><span style=""> </span><span style="">{</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span><span style="">				</span><span style="color:#a6e22e">key</span><span style=""> </span><span style="">=</span><span style=""> </span><span style="color:#a6e22e">path</span><span style="">[:</span><span style="color:#a6e22e">i</span><span style="">]</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span><span style="">				</span><span style="color:#a6e22e">path</span><span style=""> </span><span style="">=</span><span style=""> </span><span style="color:#a6e22e">path</span><span style="">[</span><span style="color:#a6e22e">i</span><span style="">:]</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span><span style="">				</span><span style="color:#66d9ef">if</span><span style=""> </span><span style="color:#a6e22e">path</span><span style=""> </span><span style="color:#f92672">==</span><span style=""> </span><span style="color:#e6db74">&#34;/&#34;</span><span style=""> </span><span style="">{</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span><span style="">					</span><span style="color:#66d9ef">return</span><span style=""> </span><span style="color:#a6e22e">key</span><span style="">,</span><span style=""> </span><span style="color:#e6db74">&#34;&#34;</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">18</span><span style="">				</span><span style="">}</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">19</span><span style="">				</span><span style="color:#66d9ef">return</span><span style=""> </span><span style="color:#a6e22e">key</span><span style="">,</span><span style=""> </span><span style="color:#a6e22e">path</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">20</span><span style="">			</span><span style="">}</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">21</span><span style="">		</span><span style="">}</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">22</span><span style="">	</span><span style="">}</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">23</span><span style="">	</span><span style="color:#66d9ef">return</span><span style=""> </span><span style="color:#a6e22e">path</span><span style="">,</span><span style=""> </span><span style="color:#e6db74">&#34;&#34;</span><span style="">
-</span><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">24</span><span style=""></span><span style="">}</span></code></pre>
-</div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 1</span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Trie</span>) <span style="color:#a6e22e">SplitPath</span>(<span style="color:#a6e22e">path</span> <span style="color:#66d9ef">string</span>) (<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">string</span>) {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 2</span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 3</span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">path</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 4</span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">key</span>, <span style="color:#a6e22e">path</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 5</span>	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">path</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;/&#34;</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 6</span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">path</span>, <span style="color:#e6db74">&#34;&#34;</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 7</span>	}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 8</span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">path</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;"> 9</span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">path</span>[<span style="color:#a6e22e">i</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;/&#39;</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">10</span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">11</span>				<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">SplitPath</span>(<span style="color:#a6e22e">path</span>[<span style="color:#ae81ff">1</span>:])
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">12</span>			}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">13</span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> &gt; <span style="color:#ae81ff">0</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">14</span>				<span style="color:#a6e22e">key</span> = <span style="color:#a6e22e">path</span>[:<span style="color:#a6e22e">i</span>]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">15</span>				<span style="color:#a6e22e">path</span> = <span style="color:#a6e22e">path</span>[<span style="color:#a6e22e">i</span>:]
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">16</span>				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">path</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;/&#34;</span> {
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">17</span>					<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">key</span>, <span style="color:#e6db74">&#34;&#34;</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">18</span>				}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">19</span>				<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">key</span>, <span style="color:#a6e22e">path</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">20</span>			}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">21</span>		}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">22</span>	}
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">23</span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">path</span>, <span style="color:#e6db74">&#34;&#34;</span>
+<span style="color:#7c7c79;margin-right:0.4em;padding:00.4em00.4em;">24</span>}</code></pre></div>
 
 <p>The router now is faster and static routes are 0% fat 🚀.</p>
 
