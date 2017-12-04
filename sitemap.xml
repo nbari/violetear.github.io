@@ -54,6 +54,11 @@
   
   <url>
     <loc>https://violetear.org/post/websocket-hijack/</loc>
+    <lastmod>2017-03-11T11:03:42+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://violetear.org/post/prometheus/</loc>
     <lastmod>2017-03-11T11:03:41+02:00</lastmod>
   </url>
   
@@ -81,7 +86,7 @@
   
   <url>
     <loc>https://violetear.org/tags/hijack/</loc>
-    <lastmod>2017-03-11T11:03:41+02:00</lastmod>
+    <lastmod>2017-03-11T11:03:42+02:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -98,6 +103,12 @@
   </url>
   
   <url>
+    <loc>https://violetear.org/tags/metrics/</loc>
+    <lastmod>2017-03-11T11:03:41+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://violetear.org/post/</loc>
     <lastmod>2017-03-11T10:11:01+00:00</lastmod>
     <priority>0</priority>
@@ -110,6 +121,12 @@
   </url>
   
   <url>
+    <loc>https://violetear.org/tags/prometheus/</loc>
+    <lastmod>2017-03-11T11:03:41+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://violetear.org/tags/</loc>
     <lastmod>2017-03-11T11:03:40+02:00</lastmod>
     <priority>0</priority>
@@ -117,7 +134,7 @@
   
   <url>
     <loc>https://violetear.org/tags/websocket/</loc>
-    <lastmod>2017-03-11T11:03:41+02:00</lastmod>
+    <lastmod>2017-03-11T11:03:42+02:00</lastmod>
     <priority>0</priority>
   </url>
   

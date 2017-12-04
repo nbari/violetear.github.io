@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright> </copyright>
-    <lastBuildDate>Sat, 11 Mar 2017 11:03:41 +0200</lastBuildDate>
+    <lastBuildDate>Sat, 11 Mar 2017 11:03:42 +0200</lastBuildDate>
     
 	<atom:link href="https://violetear.org/tags/websocket/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,7 +15,7 @@
     <item>
       <title>Websocket Hijack</title>
       <link>https://violetear.org/post/websocket-hijack/</link>
-      <pubDate>Sat, 11 Mar 2017 11:03:41 +0200</pubDate>
+      <pubDate>Sat, 11 Mar 2017 11:03:42 +0200</pubDate>
       
       <guid>https://violetear.org/post/websocket-hijack/</guid>
       <description>To use all the available interfaces in the net/http packages, disable the LogRequests option:
