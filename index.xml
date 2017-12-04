@@ -125,6 +125,16 @@ package main import ( &amp;quot;encoding/json&amp;quot; &amp;quot;log&amp;quot; 
     </item>
     
     <item>
+      <title>Websocket Hijack</title>
+      <link>https://violetear.org/post/websocket-hijack/</link>
+      <pubDate>Sat, 11 Mar 2017 11:03:41 +0200</pubDate>
+      
+      <guid>https://violetear.org/post/websocket-hijack/</guid>
+      <description>To use all the available interfaces in the net/http packages, disable the LogRequests option:
+router := violetear.New() router.LogRequests = false  The reasons for this is that when using LogRequests a custom responseWriter is used and it doesn&amp;rsquo;t extend to all available interfaces in the net/http package.</description>
+    </item>
+    
+    <item>
       <title>The journey to achieve 0 allocations</title>
       <link>https://violetear.org/post/0-allocs/</link>
       <pubDate>Sat, 11 Mar 2017 11:03:40 +0200</pubDate>
