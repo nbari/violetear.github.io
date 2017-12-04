@@ -140,7 +140,7 @@ router := violetear.New() router.LogRequests = false  The reasons for this is th
       <pubDate>Sat, 11 Mar 2017 11:03:41 +0200</pubDate>
       
       <guid>https://violetear.org/post/prometheus/</guid>
-      <description>Basic prometheusexample with HTTP Basic authentication for the /metrics endpoint:
+      <description>Basic prometheus example with HTTP Basic authentication for the /metrics endpoint:
 package main import ( &amp;quot;crypto/subtle&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;log&amp;quot; &amp;quot;net/http&amp;quot; &amp;quot;time&amp;quot; &amp;quot;github.com/nbari/violetear&amp;quot; &amp;quot;github.com/nbari/violetear/middleware&amp;quot; &amp;quot;github.com/prometheus/client_golang/prometheus&amp;quot; ) func index(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, &amp;quot;index %s!&amp;quot;, r.URL.Path) } func foo(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, &amp;quot;foo %s!&amp;quot;, r.URL.Path) } func bar(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, &amp;quot;bar %s!&amp;quot;, r.URL.Path) } // BasicAuth secure /metrics endpoint by using the defined username and password func BasicAuth(next http.</description>
     </item>
     
