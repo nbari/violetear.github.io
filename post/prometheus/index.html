@@ -7,7 +7,7 @@
 		<meta name="author" content="violetear">
 		<meta name="description" content="Go HTTP router">
 		<meta name="keywords" content="router, http, http2, dynamic, rest, versioning, api, 0 allocs, prometheus">
-		<meta name="generator" content="Hugo 0.31.1" />
+		<meta name="generator" content="Hugo 0.32.1" />
 		<title>prometheus &middot; violetear</title>
         <link rel="apple-touch-icon" sizes="57x57" href="https://violetear.org/images/apple-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="https://violetear.org/images/apple-icon-60x60.png">
@@ -74,6 +74,14 @@
                 <section id="post-body">
                     <p>Basic <a href="prometheus.io">prometheus</a> example with <a href="https://en.wikipedia.org/wiki/Basic_access_authentication">HTTP Basic authentication</a> for the <code>/metrics</code> endpoint:</p>
 
+<p>Notice the use of <code>.Name(&quot;endpoint&quot;)</code> and <code>GetRouteName</code>:</p>
+
+<pre><code class="language-go">endpoint := violetear.GetRouteName(r)
+c.WithLabelValues(endpoint).Observe(time.Since(start).Seconds())
+</code></pre>
+
+<p>This helps to create the labels using the defined names.</p>
+
 <pre><code class="language-go">package main
 
 import (
@@ -127,7 +135,8 @@ func counterMW(c *prometheus.HistogramVec) middleware.Constructor {
 			// do something here
 			next.ServeHTTP(w, r)
 			log.Println(&quot;updating prometheus counters&quot;)
-			c.WithLabelValues(r.URL.Path).Observe(time.Since(start).Seconds())
+			endpoint := violetear.GetRouteName(r)
+			c.WithLabelValues(endpoint).Observe(time.Since(start).Seconds())
 		})
 	}
 }
@@ -145,9 +154,9 @@ func main() {
 	stdChain := middleware.New(counterMW(counter), secondMW)
 
 	router := violetear.New()
-	router.Handle(&quot;/&quot;, stdChain.ThenFunc(index))
-	router.Handle(&quot;/foo&quot;, stdChain.ThenFunc(foo), &quot;GET&quot;)
-	router.Handle(&quot;/bar&quot;, stdChain.ThenFunc(bar), &quot;POST&quot;)
+	router.Handle(&quot;/&quot;, stdChain.ThenFunc(index)).Name(&quot;root&quot;)
+	router.Handle(&quot;/foo&quot;, stdChain.ThenFunc(foo), &quot;GET&quot;).Name(&quot;foo&quot;)
+	router.Handle(&quot;/bar&quot;, stdChain.ThenFunc(bar), &quot;POST&quot;).Name(&quot;bar&quot;)
 	router.Handle(&quot;/metrics&quot;, BasicAuth(prometheus.Handler(),
 		&quot;user&quot;,
 		&quot;password&quot;,
