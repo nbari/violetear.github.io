@@ -142,8 +142,8 @@ router := violetear.New() router.LogRequests = false  The reasons for this is th
       <guid>https://violetear.org/post/prometheus/</guid>
       <description>Basic prometheus example with HTTP Basic authentication for the /metrics endpoint:
 Notice the use of .Name(&amp;quot;endpoint&amp;quot;) and GetRouteName:
-endpoint := violetear.GetRouteName(r) c.WithLabelValues(endpoint).Observe(time.Since(start).Seconds())  This helps to create the labels using the defined names.
-package main import ( &amp;quot;crypto/subtle&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;log&amp;quot; &amp;quot;net/http&amp;quot; &amp;quot;time&amp;quot; &amp;quot;github.com/nbari/violetear&amp;quot; &amp;quot;github.com/nbari/violetear/middleware&amp;quot; &amp;quot;github.com/prometheus/client_golang/prometheus&amp;quot; ) func index(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, &amp;quot;index %s!&amp;quot;, r.URL.Path) } func foo(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, &amp;quot;foo %s!&amp;quot;, r.URL.Path) } func bar(w http.</description>
+endpoint := violetear.GetRouteName(r) c.WithLabelValues(endpoint).Observe(time.Since(start).Seconds())  This helps to create the labels using the defined names when creating the route.
+package main import ( &amp;quot;crypto/subtle&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;log&amp;quot; &amp;quot;net/http&amp;quot; &amp;quot;time&amp;quot; &amp;quot;github.com/nbari/violetear&amp;quot; &amp;quot;github.com/nbari/violetear/middleware&amp;quot; &amp;quot;github.com/prometheus/client_golang/prometheus&amp;quot; ) func index(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, &amp;quot;index %s!&amp;quot;, r.URL.Path) } func foo(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, &amp;quot;foo %s!&amp;quot;, r.</description>
     </item>
     
     <item>
