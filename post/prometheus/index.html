@@ -76,7 +76,7 @@
 
 <p>Notice the use of <code>.Name(&quot;endpoint&quot;)</code> and <code>GetRouteName</code>:</p>
 
-<pre><code class="language-go">endpoint := violetear.GetRouteName(r)
+<pre><code>endpoint := violetear.GetRouteName(r)
 c.WithLabelValues(endpoint).Observe(time.Since(start).Seconds())
 </code></pre>
 
