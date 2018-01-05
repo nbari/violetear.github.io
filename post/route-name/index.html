@@ -102,7 +102,7 @@ to be available to set a <code>Name</code> per route, therefore to know if an er
 when creating the route the method <code>GetError()</code> can be used, for example:</p>
 
 <pre><code class="language-go">router.Handle(&quot;*&quot;, catchAll, &quot;ALL&quot;).New(&quot;*&quot;)
-if err := GetError(); err != nil {
+if err := router.GetError(); err != nil {
     log.Fatal(err)
 }
 </code></pre>
