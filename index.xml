@@ -139,7 +139,7 @@ router := violetear.New() router.LogRequests = false  The reasons for this is th
       <pubDate>Sat, 11 Mar 2017 11:03:42 +0200</pubDate>
       
       <guid>https://violetear.org/post/route-name/</guid>
-      <description>To be available to know the name of the route within the handler, the .New method can be used, example:
+      <description>To be available to know the name of the route within the handler, the .Name method can be used, example:
 router := violetear.New() router.Handle(&amp;quot;*&amp;quot;, catchAll, &amp;quot;ALL&amp;quot;).Name(&amp;quot;*&amp;quot;) router.HandleFunc(&amp;quot;/post&amp;quot;, methodPOST, &amp;quot;POST&amp;quot;).Name(&amp;quot;post&amp;quot;) router.HandleFunc(&amp;quot;/get&amp;quot;, methodALL, &amp;quot;GET&amp;quot;).Name(&amp;quot;get&amp;quot;) router.HandleFunc(&amp;quot;/:any&amp;quot;, methodRX).Name(&amp;quot;rx&amp;quot;)  To retrieve the name within the handler this could be used:
 func theHandler(w http.ResponseWriter, r *http.Request) { endpoint := violetear.GetRouteName(r) fmt.Fprintf(w, &amp;quot;my name is: %s!&amp;quot;, endpoint) }  This is useful when instrumenting your code with tools like prometheus.</description>
     </item>
